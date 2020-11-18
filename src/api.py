@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
 from src.Routes.example_controller import ExampleController
-
+from src.Routes.git_repository_controller import GitRepositoryController
 
 class DevConfig(object):
     DEBUG = True
@@ -14,6 +14,8 @@ api = Api(app)
 CORS(app, origin='*')
 
 api.add_resource(ExampleController, '/example/')
+
+api.add_resource(GitRepositoryController, '/repository/')
 
 
 if __name__ == "__main__":
