@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-import common.config as config
+import config
 from resources.example_controller import ExampleController
 
 app = Flask("soft engineering")
