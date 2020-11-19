@@ -1,0 +1,1 @@
+安裝套件 : pip install -r requirements.txt

@@ -1,15 +1,11 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-from routes.example_controller import ExampleController
-
-
-class DevConfig(object):
-    DEBUG = True
-
+import common.config as config
+from resources.example_controller import ExampleController
 
 app = Flask("soft engineering")
-app.config_class(DevConfig)
+app.config.from_object(config)
 api = Api(app)
 CORS(app, origin='*')
 
