@@ -1,2 +1,3 @@
 DEBUG = True
-TEST = False
+TEST = True
+BASE = 'http://127.0.0.1:5000/'
