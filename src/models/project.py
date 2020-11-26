@@ -1,7 +1,5 @@
-from entities.entity import Entity
-
-class Project(Entity):
-    def __init__(self, pid, name, owner, repositories):
+class Project():
+    def __init__(self, pid, name, owner, repositories=None):
         self.pid = pid
         self.name = name
         self.owner = owner

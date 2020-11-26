@@ -11,10 +11,10 @@ app.config.from_object(config)
 api = Api(app)
 CORS(app, origin='*')
 
-api.add_resource(ExampleController, '/example/')
+api.add_resource(ExampleController, '/example')
 api.add_resource(UserResource, '/user', endpoint='users')
 api.add_resource(UserResource, '/user/<string:uid>', endpoint='user')
-api.add_resource(ProjectResource, '/project/', endpoint='projects')
+api.add_resource(ProjectResource, '/project', endpoint='projects')
 api.add_resource(ProjectResource, '/project/<string:pid>', endpoint='project')
 
 if __name__ == "__main__":
