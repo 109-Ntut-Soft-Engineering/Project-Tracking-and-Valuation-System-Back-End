@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
 import config as config
-import sys
+import sys, os
 
 
 class Database():

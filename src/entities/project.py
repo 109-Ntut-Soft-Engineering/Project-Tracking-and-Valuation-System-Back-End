@@ -1,4 +1,6 @@
-class Project():
+from entities.entity import Entity
+
+class Project(Entity):
     def __init__(self, pid, name, owner, repositories):
         self.pid = pid
         self.name = name
