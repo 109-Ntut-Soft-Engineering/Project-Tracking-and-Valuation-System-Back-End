@@ -2,7 +2,7 @@ from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from resources.base_resource import BaseResource
 from models.project import Project
-from common import status_code
+from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
 
@@ -40,8 +40,8 @@ class ProjectResource(BaseResource):
     def patch(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', required=True, help='name is required.')
-        parser.add_argument('owner', required=False)
-        parser.add_argument('repositories', required=False)
+        parser.add_argument('owner', action='append', required=False)
+        parser.add_argument('repositories', action='append', required=False)
         args = parser.parse_args()
 
         message = self.__update_project(args['name'], args['owner'], args['repositories'])
@@ -96,20 +96,45 @@ class ProjectResource(BaseResource):
             return status_code.NOT_FOUND
 
         project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name))
-        project_dict = project.to_dict()
+        project_dict = self.__init_project(project)
 
         update_data = {}
-        if owner != None:
-            update_data[u'owner'] = owner
-        elif set(owner) & set(project_dict['owner']):
+        code = self.__set_update_data(project_dict, owner, update_data, 'owner')
+        if is_client_error(code):
+            return code
+        code = self.__set_update_data(project_dict, repositories, update_data, 'repositories')
+        if is_client_error(code):
+            return code
+
+        if len(update_data) == 0:
             return status_code.BAD_REQUEST
-        if repositories != None:
-            update_data[u'repositories'] = repositories
-        elif set(repositories) & set(project_dict['repositories']):
-            return status_code.BAD_REQUEST
-        
-        project.set(update_data, merge=True)
+
+        project.reference.set(update_data, merge=True)
         return status_code.OK
+
+    def __init_project(self, project):
+        project_dict = project.to_dict()
+        if 'owner' not in project_dict:
+            project_dict['owner'] = []
+        if 'repositories' not in project_dict:
+            project_dict['repositories'] = []
+        return project_dict
+
+    def __set_update_data(self, origin, update, update_data, field_name):
+        code = self.__validate_update_array(origin, update, field_name)
+        if code == status_code.OK:
+            update_data[field_name] = list(set(update) | set(origin[field_name]))
+        elif is_client_error(code):
+            return code
+        return status_code.OK
+
+    def __validate_update_array(self, origin, update, field_name):
+        if update is None:
+            return error_code.NO_SUCH_ELEMENT
+        if len(set(origin) & set(update)) == 0:
+            return status_code.OK
+        else:
+            return status_code.BAD_REQUEST
 
     def __get_unique(self, collection):
         return next(collection.stream())
