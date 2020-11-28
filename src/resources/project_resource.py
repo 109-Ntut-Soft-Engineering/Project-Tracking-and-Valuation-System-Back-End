@@ -9,8 +9,8 @@ class ProjectResource(BaseResource):
     def __init__(self):
         super().__init__()
 
-    def get(self, pid=None):
-        data = self.__project_information(pid)
+    def get(self, name=None):
+        data = self.__project_information(name)
         if data == error_code.NO_SUCH_ELEMENT:
             abort(404)
         return jsonify(data)
@@ -24,12 +24,15 @@ class ProjectResource(BaseResource):
         message = self.__add_project(args['name'], args['owner'])
         return message
 
-    def __project_information(self, pid=None):
-        if pid is None:
+    def delete(self, pid):
+
+
+    def __project_information(self, name=None):
+        if name is None:
             projects = self.db.collection(u'projects').where(u'owner', u'array_contains', self.uid).stream()
             return { 'projects': project.to_dict() for project in projects }
         else:
-            projects = self.db.collection(u'projects').where(u'pid', u'==', pid).stream()
+            projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
             if projects is None:
                 return error_code.NO_SUCH_ELEMENT
             return { 'project': project.to_dict() for project in projects }
