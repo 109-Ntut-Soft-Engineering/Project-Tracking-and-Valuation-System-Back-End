@@ -2,7 +2,7 @@ from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from resources.base_resource import BaseResource
 from models.project import Project
-from common import error_code
+from common import status_code
 from common.util import is_iter_empty
 
 class ProjectResource(BaseResource):
@@ -11,21 +11,30 @@ class ProjectResource(BaseResource):
 
     def get(self, name=None):
         data = self.__project_information(name)
-        if data == error_code.NO_SUCH_ELEMENT:
-            abort(404)
+        if data == status_code.NOT_FOUND:
+            abort(status_code.NOT_FOUND)
         return jsonify(data)
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, help="account is required.")
-        parser.add_argument('owner', required=True, help="account is required.")
+        parser.add_argument('name', required=True, help='name is required.')
+        parser.add_argument('owner', required=True, help='owner is required.')
         args = parser.parse_args()
 
         message = self.__add_project(args['name'], args['owner'])
+        if message == status_code.BAD_REQUEST:
+            abort(status_code.BAD_REQUEST)
         return message
 
-    def delete(self, pid):
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', required=True, help='name is required.')
+        args = parser.parse_args()
 
+        message = self.__delete_project(args['name'])
+        if message == status_code.NOT_FOUND:
+            abort(status_code.NOT_FOUND)
+        return message
 
     def __project_information(self, name=None):
         if name is None:
@@ -34,19 +43,19 @@ class ProjectResource(BaseResource):
         else:
             projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
             if projects is None:
-                return error_code.NO_SUCH_ELEMENT
+                return status_code.NOT_FOUND
             return { 'project': project.to_dict() for project in projects }
 
     def __add_project(self, name, owner):
         if self.__is_project_name_exist(name):
-            return error_code.ELEMENT_EXIST
+            return status_code.BAD_REQUEST
 
         pid = self.__next_project_id()
         project = Project(pid=pid, name=name, owner=owner)
 
         self.db.collection(u'projects').document().set(project.to_dict())
 
-        return 200
+        return status_code.OK
 
     def __is_project_name_exist(self, name):
         projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
@@ -59,5 +68,13 @@ class ProjectResource(BaseResource):
         *lst, last = projects
         last_project = last.to_dict()
         return int(last.to_dict()['pid']) + 1
+
+    def __delete_project(self, name):
+        if not self.__is_project_name_exist(name):
+            return status_code.NOT_FOUND
+        projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
+        for project in projects:
+            project.reference.delete()
+        return status_code.OK
 
     
