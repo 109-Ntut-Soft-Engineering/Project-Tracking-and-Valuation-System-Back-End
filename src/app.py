@@ -15,7 +15,7 @@ api.add_resource(UserResource, '/user/<string:uid>', endpoint='user')
 api.add_resource(ProjectResource, '/project', endpoint='projects')
 api.add_resource(ProjectResource, '/project/<string:name>', endpoint='project')
 api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
-api.add_resource(GitRepositoryResource, '/repository/<string:name>/<string:name>', endpoint='repository')
+api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
 
 if __name__ == "__main__":
     app.run()
