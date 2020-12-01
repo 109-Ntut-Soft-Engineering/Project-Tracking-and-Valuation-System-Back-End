@@ -48,3 +48,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Privacy file
+firebaseKey.json
+testFirebaseKey.json

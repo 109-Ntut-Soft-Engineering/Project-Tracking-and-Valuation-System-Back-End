@@ -1,7 +1,7 @@
 from github import Github
 from github import Repository
 from github import AuthenticatedUser
-from src.Entities.Git.git_object_parser import GitObjectParser
+from utilities.git_object_parser import GitObjectParser
 
 
 class GitApiRequester(object):
@@ -22,7 +22,7 @@ class GitApiRequester(object):
 
         # deal with code frequeny
         stats_code_frequency = self.get_stats_code_frequency(rp)
-        rp_info["stats_code_frequency"] = GitObjectParser.parser_stats_code_frequencies(stats_code_frequency)
+        rp_info["code_freq"] = GitObjectParser.parser_stats_code_frequencies(stats_code_frequency)
 
         # deal with commits
         commits = self.get_commits(rp)
