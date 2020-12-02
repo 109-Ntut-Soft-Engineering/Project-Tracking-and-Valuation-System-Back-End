@@ -8,12 +8,8 @@ class ProjectCodeFrequencyResource(BaseResource):
         super().__init__()
         self.test_token = 'ef4164107b7e4e2505abd8fced70951f44e51964'
 
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, help="project's name is required")
-        args = parser.parse_args()
-
-        projects = self.db.collection(u'projects').where(u'name', u'==', args.name).get()
+    def get(self, name):
+        projects = self.db.collection(u'projects').where(u'name', u'==', name).get()
 
         if len(projects) == 0:
             return status_code.NOT_FOUND
