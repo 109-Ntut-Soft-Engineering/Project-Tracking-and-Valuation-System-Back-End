@@ -5,6 +5,7 @@ from common import error_code, status_code
 from common.util import is_iter_empty
 from models.repository import Repository
 
+
 class GitRepositoryResource(BaseResource):
     def __init__(self):
         super().__init__()
@@ -41,8 +42,6 @@ class GitRepositoryResource(BaseResource):
         args = parser.parse_args()
         self.db.collection(u'repositories').document().delete({'pid': args['pid'],
                                                                 'name': args['name']})
-
-
         return status_code.OK
 
     def __repository_information(self, pid, name):

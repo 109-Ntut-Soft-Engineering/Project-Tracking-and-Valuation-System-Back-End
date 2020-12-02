@@ -6,11 +6,13 @@ import sys, os
 
 class Database():
     def __init__(self, idToken):
-        firebaseKey = './src/'
+        # 不行的換一個（和專案roots的設定有關
+        # firebaseKey = os.path.abspath(os.path.join('.', 'src'))
+        firebaseKey = os.path.abspath(os.path.join('.'))
         if not config.TEST:
-            firebaseKey += 'firebaseKey.json'
+            firebaseKey = os.path.join(firebaseKey, 'firebaseKey.json')
         else:
-            firebaseKey += 'testFirebaseKey.json'
+            firebaseKey = os.path.join(firebaseKey, 'testFirebaseKey.json')
         if not firebase_admin._apps:
             cred = credentials.Certificate(firebaseKey)
             firebase_admin.initialize_app(cred)

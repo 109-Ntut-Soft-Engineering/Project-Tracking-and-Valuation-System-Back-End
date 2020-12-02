@@ -22,10 +22,10 @@ class Project():
     
     def to_dict(self):
         dest = {
-            u'pid':self.pid, 
-            u'name':self.name, 
-            u'owner':self.owner, 
-            u'repositories':self.repositories
+            u'pid': self.pid,
+            u'name': self.name,
+            u'owner': self.owner,
+            u'repositories': self.repositories
         }
 
         if self.pid:

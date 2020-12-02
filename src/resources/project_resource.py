@@ -6,6 +6,7 @@ from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
 
+
 class ProjectResource(BaseResource):
     def __init__(self):
         super().__init__()
