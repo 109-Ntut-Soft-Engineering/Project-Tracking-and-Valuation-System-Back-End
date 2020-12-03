@@ -1,8 +1,9 @@
 from flask_restful import Resource, reqparse
 from models.project_information_calculator import ProjectInformationCalculator
-from models.project import Project
+from entities.project import Project
 from resources.base_resource import BaseResource
 from common import status_code
+
 class ProjectCodeFrequencyResource(BaseResource):
     def __init__(self):
         super().__init__()

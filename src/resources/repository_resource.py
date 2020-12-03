@@ -1,7 +1,7 @@
 from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from resources.base_resource import BaseResource
-from models.repo import Repo
+from entities.repo import Repo
 from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty

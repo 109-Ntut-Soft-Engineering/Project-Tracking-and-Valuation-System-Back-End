@@ -3,7 +3,7 @@ from flask_restful import reqparse
 from resources.base_resource import BaseResource
 from common import error_code, status_code
 from common.util import is_iter_empty
-from models.repository import Repository
+from entities.repository import Repository
 
 
 class GitRepositoryResource(BaseResource):
