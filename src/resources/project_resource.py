@@ -6,6 +6,8 @@ from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
 
+import sys
+
 
 class ProjectResource(BaseResource):
     def __init__(self):
@@ -20,7 +22,7 @@ class ProjectResource(BaseResource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', required=True, help='name is required.')
-        parser.add_argument('owner', required=True, help='owner is required.')
+        parser.add_argument('owner', action='append', required=True, help='owner is required.')
         args = parser.parse_args()
 
         message = self.__add_project(args['name'], args['owner'])
@@ -115,9 +117,9 @@ class ProjectResource(BaseResource):
 
     def __init_project(self, project):
         project_dict = project.to_dict()
-        if 'owner' not in project_dict:
+        if project_dict['owner'] is None:
             project_dict['owner'] = []
-        if 'repositories' not in project_dict:
+        if project_dict['repositories'] is None:
             project_dict['repositories'] = []
         return project_dict
 
