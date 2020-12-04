@@ -20,7 +20,7 @@ api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
 api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
 
 # for code frequency
-api.add_resource(ProjectCodeFrequencyResource, '/project/code_freq/<string: project>')
+api.add_resource(ProjectCodeFrequencyResource, '/project/code_freq/<string:project>')
 
 if __name__ == "__main__":
     app.run()

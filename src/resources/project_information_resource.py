@@ -3,6 +3,8 @@ from models.project_information_calculator import ProjectInformationCalculator
 from models.project import Project
 from resources.base_resource import BaseResource
 from common import status_code
+
+
 class ProjectCodeFrequencyResource(BaseResource):
     def __init__(self):
         super().__init__()
@@ -18,7 +20,6 @@ class ProjectCodeFrequencyResource(BaseResource):
         project = Project(project['pid'], project['name'], project['owner'], project['repositories'])
         calculator = ProjectInformationCalculator(project, self.test_token)
         return {"code_freq": calculator.get_code_freq()}, status_code.OK
-
 
 
 class ProjectCommitsResource(Resource):
