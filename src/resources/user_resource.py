@@ -10,7 +10,7 @@ from common.status_code import is_client_error
 class UserResource(BaseResource):
     def __init__(self):
         super().__init__()
-        self._model = UserModel()
+        self._model = UserModel(self.db, self.uid)
 
     def get(self):
         data = self._model.get_user_information(self.uid)
