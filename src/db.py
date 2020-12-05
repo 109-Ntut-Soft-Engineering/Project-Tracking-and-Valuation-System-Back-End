@@ -18,7 +18,7 @@ class Database():
             firebase_admin.initialize_app(cred)
         self._db = firestore.client()
         if idToken == 'test_token':
-            self._uid = '456'
+            self._uid = '123'
             return
         decoded_token = auth.verify_id_token(idToken)
         self._uid = decoded_token['uid']

@@ -3,12 +3,13 @@ from entities.project import Project
 from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
+import sys
 
 class ProjectModel(BaseModel):
     def get_project_information(self, name=None):
         if name is None:
             projects = self.db.collection(u'projects').where(u'owner', u'array_contains', self.uid).stream()
-            return { 'projects': project.to_dict() for project in projects }
+            return { 'projects': [project.to_dict() for project in projects]}
         else:
             projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
             if projects is None:
@@ -20,7 +21,7 @@ class ProjectModel(BaseModel):
             return status_code.BAD_REQUEST
 
         pid = self.__next_project_id()
-        project = Project(pid=pid, name=name, owner=owner)
+        project = Project(pid=pid, name=name, owner=list(owner))
 
         self.db.collection(u'projects').document().set(project.to_dict())
 
