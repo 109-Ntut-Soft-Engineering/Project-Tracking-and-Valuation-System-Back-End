@@ -7,6 +7,7 @@ from common import error_code, status_code
 from common.util import is_iter_empty
 from common.status_code import is_client_error
 
+
 class UserResource(BaseResource):
     def __init__(self):
         super().__init__()
@@ -28,4 +29,3 @@ class UserResource(BaseResource):
         if is_client_error(code):
             abort(code)
         return code
-        
