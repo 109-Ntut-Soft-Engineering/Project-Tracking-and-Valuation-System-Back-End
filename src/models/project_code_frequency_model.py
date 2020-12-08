@@ -1,17 +1,18 @@
 from utilities.git_api_requester import GitApiRequester
+from models.base_model import BaseModel
 
 
-class ProjectCodeFrequencyModel(object):
-    def __init__(self, project, token):
-        self.project = project
-        self.token = token
+class ProjectCodeFrequencyModel(BaseModel):
+    def get_code_freq(self, name, token):
+        project = self.__get_project(name)
+        print('project:', project)
+        repositories = self.__get_repositories(project)
 
-    def get_code_freq(self):
-        requester = GitApiRequester(self.token)
+        requester = GitApiRequester(token)
         code_freqies= []
-        for rp_url in self.project.repositories:
+        for repository in repositories:
             # 用url拿到rp
-            rp = requester.get_rp_by_rul(rp_url)
+            rp = requester.get_rp_by_rul(repository['url'])
             if rp is None:
                 pass
             else:
@@ -24,7 +25,7 @@ class ProjectCodeFrequencyModel(object):
         for rp_code_freq in code_freqies:
             for week_data in rp_code_freq:
                 date = week_data['week']
-                progress = week_data['additions'] + week_data['deletion']
+                progress = week_data['additions'] - week_data['deletion']
                 if date not in code_freq_series.keys():
                     code_freq_series[date] = progress
                 else:
@@ -34,6 +35,23 @@ class ProjectCodeFrequencyModel(object):
             date_code.append({'date': date, 'code': code})
         return date_code
 
+    def __get_project(self, name):
+        project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name)).to_dict()
+        return project
 
+    def __get_repositories(self, project):
+        repositories = []
+        rids = map(int, project[u'repositories'])
+        try:
+            for rid in rids:
+                repository = self.__get_unique(self.db.collection(u'repositories').where(u'rid', u'==', rid))
+                repository = repository.to_dict()
+                print('repository:', repository)
+                repositories.append(repository)
+        except :
+                print("get repository occur error.")
+        return repositories
 
+    def __get_unique(self, collection):
+        return next(collection.stream())
 

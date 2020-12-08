@@ -4,12 +4,13 @@ from entities.commit import Commit
 from entities.commits import Commits
 import sys
 
+
 class ProjectCommitModel(BaseModel):
     def get_project_commit_info(self, name):
         project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name)).to_dict()
         commits = self.__get_commits(project)
         print(commits, file=sys.stderr)
-        return { "commits": commits.to_dict() }
+        return {"commits": commits.to_dict() }
 
     def __get_repositories(self, project):
         repositories = []
