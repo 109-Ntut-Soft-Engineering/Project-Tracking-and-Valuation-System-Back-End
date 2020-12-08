@@ -2,6 +2,7 @@ from github import Github
 from github import Repository
 from github import AuthenticatedUser
 from utilities.git_object_parser import GitObjectParser
+# from git_object_parser import GitObjectParser
 
 
 class GitApiRequester(object):
@@ -72,7 +73,7 @@ if __name__ == '__main__':
     user = requester.get_user()
     print(user.name)
 
-    rp = requester.get_rp_by_name("automl/auto-sklearn")
+    rp = requester.get_rp_by_name("Gougon-Side-Project/Android-DodoCagePhonograph")
     rp_info = requester.get_rp_info(rp)
     print(json.dumps(rp_info, indent=1))
 

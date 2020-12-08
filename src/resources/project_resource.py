@@ -15,41 +15,25 @@ class ProjectResource(BaseResource):
         super().__init__()
         self._model = ProjectModel(self.db, self.uid)
 
-    def get(self, name=None):
+    def get(self, name):
         data = self._model.get_project_information(name)
         if is_client_error(data):
             abort(data)
         return jsonify(data)
 
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, help='name is required.')
-        parser.add_argument('owner', action='append', required=True, help='owner is required.')
-        args = parser.parse_args()
-
-        message = self._model.add_project(args['name'], args['owner'])
+    def delete(self, name):
+        message = self._model.delete_project(name)
         if is_client_error(message):
             abort(message)
         return message
 
-    def delete(self):
+    def patch(self, name):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, help='name is required.')
-        args = parser.parse_args()
-
-        message = self._model.delete_project(args['name'])
-        if is_client_error(message):
-            abort(message)
-        return message
-
-    def patch(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, help='name is required.')
         parser.add_argument('owner', action='append', required=False)
         parser.add_argument('repositories', action='append', required=False)
         args = parser.parse_args()
 
-        message = self._model.update_project(args['name'], args['owner'], args['repositories'])
+        message = self._model.update_project(name, args['owner'], args['repositories'])
         if is_client_error(message):
             return message
         return message
