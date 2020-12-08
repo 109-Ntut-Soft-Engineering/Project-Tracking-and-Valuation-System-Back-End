@@ -1,9 +1,7 @@
-from flask_restful import Resource, reqparse
-from models.project_information_calculator import ProjectInformationCalculator
+from models.project_code_frequency_model import ProjectCodeFrequencyModel
 from entities.project import Project
 from resources.base_resource import BaseResource
 from common import status_code
-# from common.util import parse_project_name
 
 
 class ProjectCodeFrequencyResource(BaseResource):
@@ -19,20 +17,5 @@ class ProjectCodeFrequencyResource(BaseResource):
         print('project:',  projects[0].to_dict())
         project = projects[0].to_dict()
         project = Project(project['pid'], project['name'], project['owner'], project['repositories'])
-        calculator = ProjectInformationCalculator(project, self.test_token)
+        calculator = ProjectCodeFrequencyModel(project, self.test_token)
         return {"code_freq": calculator.get_code_freq()}, status_code.OK
-
-
-class ProjectCommitsResource(Resource):
-    def __init__(self):
-        super().__init__()
-
-    def post(self):
-        pass
-
-class ProjectIssuesResource(Resource):
-    def __init__(self):
-        super().__init__()
-
-    def post(self):
-        pass

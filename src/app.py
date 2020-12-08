@@ -5,7 +5,7 @@ import config
 from resources.user_resource import UserResource
 from resources.projects_resource import ProjectsResource
 from resources.project_resource import ProjectResource
-from resources.project_information_resource import ProjectCodeFrequencyResource
+from resources.project_code_frequency_resource import ProjectCodeFrequencyResource
 from resources.repository_resource import RepositoryResource
 from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
@@ -21,8 +21,6 @@ api.add_resource(ProjectResource, '/project/<string:name>')
 api.add_resource(ProjectCommitResource, '/project/<string:name>/commit')
 api.add_resource(AuthResource, '/auth', endpoint='auth')
 
-#api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
-#api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
 api.add_resource(RepositoryResource, '/repository', endpoint='repositories')
 api.add_resource(RepositoryResource,
                  '/repository/<string:name>', endpoint='repository')

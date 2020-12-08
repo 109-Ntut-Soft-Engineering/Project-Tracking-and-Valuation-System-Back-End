@@ -1,7 +1,7 @@
 from utilities.git_api_requester import GitApiRequester
 
 
-class ProjectInformationCalculator(object):
+class ProjectCodeFrequencyModel(object):
     def __init__(self, project, token):
         self.project = project
         self.token = token
