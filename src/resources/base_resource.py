@@ -1,12 +1,20 @@
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from db import Database
 
+
 class BaseResource(Resource):
+    # method_decorators = [authenticate]
+    # @authenticate
     def __init__(self):
         super().__init__()
-        database = Database('test_token')
-        self._db = database.db
-        self._uid = database.uid
+        database = Database()
+        if database.uid != None:
+
+            self._db = database.db
+            self._uid = database.uid
+            print(self._uid)
+        else:
+            abort(404)
 
     @property
     def db(self):

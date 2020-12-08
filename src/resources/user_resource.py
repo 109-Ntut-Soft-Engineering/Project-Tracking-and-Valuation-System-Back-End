@@ -9,6 +9,7 @@ from common.status_code import is_client_error
 
 
 class UserResource(BaseResource):
+
     def __init__(self):
         super().__init__()
         self._model = UserModel(self.db, self.uid)
@@ -21,11 +22,13 @@ class UserResource(BaseResource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, help='name is required.')
+        parser.add_argument('name', required=True, help='name is required')
         parser.add_argument('email', required=True, help='email is required')
         args = parser.parse_args()
-
-        code = self._model.add_user(args['name'], args['email'])
-        if is_client_error(code):
-            abort(code)
-        return code
+        print(args['name'], args['email'])
+        msg, code = self._model.add_user(args['name'], args['email'])
+        # if is_client_error(code):
+        #     abort(code)
+        return {
+            'message': msg
+        }, code

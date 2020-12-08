@@ -24,13 +24,13 @@ class UserModel(BaseModel):
 
     def add_user(self, name, email):
         if self.__is_uid_exist(self.uid) or self.__is_email_exist(self.uid):
-            return status_code.BAD_REQUEST
+            return '發生錯誤', status_code.BAD_REQUEST
 
-        user = User(uid=self.uid, name=name, email=email)
+        user = User(name=name, email=email)
 
-        self.db.collection(u'users').document().set(user.to_dict())
+        self.db.collection(u'users').document(self.uid).set(user.to_dict())
 
-        return status_code.OK
+        return '新增uid成功', status_code.OK
 
     def set_user_token(self, code):
         parameters = {
