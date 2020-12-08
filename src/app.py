@@ -5,7 +5,6 @@ import config
 from resources.user_resource import UserResource
 from resources.project_resource import ProjectResource
 from resources.project_information_resource import ProjectCodeFrequencyResource
-from resources.git_repository_resource import GitRepositoryResource
 from resources.repository_resource import RepositoryResource
 app = Flask("soft engineering")
 app.config.from_object(config)
@@ -23,7 +22,7 @@ api.add_resource(RepositoryResource, '/repository', endpoint='repositories')
 api.add_resource(RepositoryResource, '/repository/<string:name>', endpoint='repository')
 
 # for code frequency
-api.add_resource(ProjectCodeFrequencyResource, '/project/code_freq/<string:project>')
+api.add_resource(ProjectCodeFrequencyResource, '/project/code_freq/<string:name>')
 
 if __name__ == "__main__":
     app.run()

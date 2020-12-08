@@ -7,9 +7,9 @@ import sys, os
 class Database():
     def __init__(self, idToken):
         # 不行的換一個（和專案roots的設定有關
-        firebaseKey = os.path.abspath(os.path.join('.', 'src'))
-        # firebaseKey = os.path.abspath(os.path.join('.'))
-        if not config.TEST:
+        # firebaseKey = os.path.abspath(os.path.join('.', 'src'))
+        firebaseKey = os.path.abspath(os.path.join('.'))
+        if not   config.TEST:
             firebaseKey = os.path.join(firebaseKey, 'firebaseKey.json')
         else:
             firebaseKey = os.path.join(firebaseKey, 'testFirebaseKey.json')

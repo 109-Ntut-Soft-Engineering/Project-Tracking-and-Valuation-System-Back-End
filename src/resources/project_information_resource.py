@@ -3,6 +3,7 @@ from models.project_information_calculator import ProjectInformationCalculator
 from entities.project import Project
 from resources.base_resource import BaseResource
 from common import status_code
+# from common.util import parse_project_name
 
 
 class ProjectCodeFrequencyResource(BaseResource):
@@ -11,8 +12,8 @@ class ProjectCodeFrequencyResource(BaseResource):
         self.test_token = 'ef4164107b7e4e2505abd8fced70951f44e51964'
 
     def get(self, name):
+        print("name", name)
         projects = self.db.collection(u'projects').where(u'name', u'==', name).get()
-
         if len(projects) == 0:
             return status_code.NOT_FOUND
         print('project:',  projects[0].to_dict())

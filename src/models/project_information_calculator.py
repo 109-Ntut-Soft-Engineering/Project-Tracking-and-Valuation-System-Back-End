@@ -29,7 +29,10 @@ class ProjectInformationCalculator(object):
                     code_freq_series[date] = progress
                 else:
                     code_freq_series += progress
-        return code_freq_series
+        date_code = []
+        for date, code in code_freq_series.items():
+            date_code.append({'date': date, 'code': code})
+        return date_code
 
 
 
