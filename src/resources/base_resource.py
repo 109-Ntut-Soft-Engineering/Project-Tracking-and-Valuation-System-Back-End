@@ -8,13 +8,10 @@ class BaseResource(Resource):
     def __init__(self):
         super().__init__()
         database = Database()
-        if database.uid != None:
+        self._db = database.db
+        self._uid = database.uid
+        print(self._uid)
 
-            self._db = database.db
-            self._uid = database.uid
-            print(self._uid)
-        else:
-            abort(404)
 
     @property
     def db(self):

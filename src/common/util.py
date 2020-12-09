@@ -24,7 +24,7 @@ def verify_Idtoken(idToken):
         return uid
     except Exception as e:
         print(e)
-        return None
+        abort(401)
 
 
 # def authenticate(func):

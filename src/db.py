@@ -5,6 +5,7 @@ import sys
 import os
 from common.util import verify_Idtoken
 from flask import request
+from flask_restful import abort
 
 
 class Database():
@@ -20,9 +21,14 @@ class Database():
             cred = credentials.Certificate(firebaseKey)
             firebase_admin.initialize_app(cred)
         self._db = firestore.client()
-        idToken = request.headers['Authorization']
-        print(idToken)
-        self._uid = verify_Idtoken(idToken)
+
+        if ('Authorization' in request.headers):
+            idToken = request.headers['Authorization']
+            print(idToken)
+            self._uid = verify_Idtoken(idToken)
+        else:
+            abort(401)
+
         # if idToken == 'test_token':
         #     self._uid = '123'
         # else:
