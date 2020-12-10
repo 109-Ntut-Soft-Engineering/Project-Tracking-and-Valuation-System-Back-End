@@ -3,6 +3,7 @@ class User():
 
         self.name = name
         self.email = email
+        self.github = github
 
     @staticmethod
     def from_dict(source):
@@ -18,7 +19,8 @@ class User():
     def to_dict(self):
         dest = {
             'name': self.name,
-            'email': self.email
+            'email': self.email,
+            'Github': self.github
         }
 
         # if self.name:

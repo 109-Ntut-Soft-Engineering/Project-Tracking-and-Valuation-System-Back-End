@@ -24,7 +24,7 @@ class Database():
 
         if ('Authorization' in request.headers):
             idToken = request.headers['Authorization']
-            print(idToken)
+            # print(idToken)
             self._uid = verify_Idtoken(idToken)
         else:
             abort(401)

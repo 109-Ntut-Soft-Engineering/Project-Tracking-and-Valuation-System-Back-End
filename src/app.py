@@ -20,7 +20,7 @@ api.add_resource(UserResource, '/user')
 api.add_resource(ProjectsResource, '/project')
 api.add_resource(ProjectResource, '/project/<string:name>')
 api.add_resource(ProjectCommitResource, '/project/<string:name>/commit')
-api.add_resource(AuthResource, '/auth', endpoint='auth')
+api.add_resource(AuthResource, '/user/auth')
 
 #api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
 #api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
