@@ -16,12 +16,12 @@ class ProjectModel(BaseModel):
                 return status_code.NOT_FOUND
             return { 'project': project.to_dict() for project in projects }
 
-    def add_project(self, name, owner):
+    def add_project(self, name):
         if self.__is_project_name_exist(name):
             return status_code.BAD_REQUEST
 
         pid = self.__next_project_id()
-        project = Project(pid=pid, name=name, owner=list(owner))
+        project = Project(pid=pid, name=name, owner=list(self.uid))
 
         self.db.collection(u'projects').document().set(project.to_dict())
 
