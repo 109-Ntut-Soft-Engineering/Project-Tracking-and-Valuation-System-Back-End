@@ -11,7 +11,7 @@ class GitApiRequester(object):
         self.git = Github(token)
 
     def search(self, name):
-        return self.get_rp_by_name(name)
+        return self.get_rp_by_id(name)
 
     def get_rp_info(self, rp):
 
@@ -29,22 +29,22 @@ class GitApiRequester(object):
         return rp_info
 
     def get_repoList(self):
-        return self.git.get_user().get_repos()
+        return GitObjectParser.parser_repo_list(self.git.get_user().get_repos())
 
     def get_user(self) -> AuthenticatedUser:
         return self.git.get_user()
 
-    def get_rp_by_name(self, name: str) -> Repository:
+    def get_rp_by_id(self, id: str) -> Repository:
         try:
-            return self.git.get_repo(name)
+            return self.git.get_repo(id)
         except Exception:
-            print("Can't find {} from github".format(name))
+            print("Can't find {} from github".format(id))
             return None
 
     def get_rp_by_rul(self, url: str) -> Repository:
         try:
             name = self.__parse_url(url)
-            return self.get_rp_by_name(name)
+            return self.get_rp_by_id(name)
         except Exception as e:
             print("e")
             return None
@@ -74,10 +74,10 @@ if __name__ == '__main__':
     import json
     user = "s88037zz@gmail.com"
     password = 'asd87306128'
-    token = '6f013b3f8aaa5876602f9f0c2b575551ca9c2d6d'
+    token = '445d5e39b2d3f4abc9c0063fe3ff1f689470c3c5'
     requester = GitApiRequester(token)
-    user = requester.get_user()
-    print(user)
+    # repos = requester.get_repoList()
+    # print(repos)
 
     # rp = requester.get_rp_by_name(
     #     "wei02427/DatabaseFrontend")
@@ -85,5 +85,4 @@ if __name__ == '__main__':
     # rp_info = requester.get_rp_info(rp)
     # print(json.dumps(rp_info, indent=1))
 
-    # for repo in (requester.get_repoList()):
-    #     print(repo)
+    print(GitObjectParser.parser_repo_list(requester.get_repoList()))

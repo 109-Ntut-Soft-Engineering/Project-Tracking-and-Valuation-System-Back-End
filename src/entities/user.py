@@ -19,8 +19,8 @@ class User():
     def to_dict(self):
         dest = {
             'name': self.name,
-            'email': self.email,
-            'Github': self.github
+            'email': self.email
+            # 'Github': self.github
         }
 
         # if self.name:
