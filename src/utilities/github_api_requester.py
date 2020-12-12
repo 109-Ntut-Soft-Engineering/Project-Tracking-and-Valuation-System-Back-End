@@ -49,7 +49,7 @@ class GithubApiRequester(Requester):
         return GithubObjectParser.parser_issues(issues)
 
     def get_code_freq(self, rp) -> list:
-        stats_code_frequency = rp.get_code_freq()
+        stats_code_frequency = rp.get_stats_code_frequency()
         return GithubObjectParser.parser_stats_code_frequencies(stats_code_frequency)
 
     def get_commits(self, rp):
