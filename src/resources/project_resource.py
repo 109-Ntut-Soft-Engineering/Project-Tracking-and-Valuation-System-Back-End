@@ -1,19 +1,13 @@
 from flask import jsonify, abort
-from flask_restful import reqparse
-from resources.base_resource import BaseResource
-from entities.project import Project
+from flask_restful import Resource, reqparse
 from models.project_model import ProjectModel
-from common import status_code, error_code
 from common.status_code import is_client_error
-from common.util import is_iter_empty
 
 import sys
 
-
-class ProjectResource(BaseResource):
+class ProjectResource(Resource):
     def __init__(self):
-        super().__init__()
-        self._model = ProjectModel(self.db, self.uid)
+        self._model = ProjectModel('test_token')
 
     def get(self, name):
         data = self._model.get_project_information(name)

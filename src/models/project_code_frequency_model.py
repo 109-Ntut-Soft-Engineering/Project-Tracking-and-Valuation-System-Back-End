@@ -1,8 +1,13 @@
 from utilities.git_api_requester import GitApiRequester
-from models.base_model import BaseModel
+from conn_tool import ConnTool
 
 
-class ProjectCodeFrequencyModel(BaseModel):
+class ProjectCodeFrequencyModel():
+    def __init__(self, id_token):
+        _conn_tool = ConnTool(id_token)
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
+
     def get_code_freq(self, name, token):
         project = self.__get_project(name)
         print('project:', project)
@@ -36,7 +41,7 @@ class ProjectCodeFrequencyModel(BaseModel):
         return date_code
 
     def __get_project(self, name):
-        project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name)).to_dict()
+        project = self.__get_unique(self._db.collection(u'projects').where(u'name', u'==', name)).to_dict()
         return project
 
     def __get_repositories(self, project):
@@ -44,7 +49,7 @@ class ProjectCodeFrequencyModel(BaseModel):
         rids = map(int, project[u'repositories'])
         try:
             for rid in rids:
-                repository = self.__get_unique(self.db.collection(u'repositories').where(u'rid', u'==', rid))
+                repository = self.__get_unique(self._db.collection(u'repositories').where(u'rid', u'==', rid))
                 repository = repository.to_dict()
                 print('repository:', repository)
                 repositories.append(repository)

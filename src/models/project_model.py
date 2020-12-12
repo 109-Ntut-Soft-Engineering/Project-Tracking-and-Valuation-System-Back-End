@@ -1,21 +1,26 @@
-from models.base_model import BaseModel
+from conn_tool import ConnTool
 from entities.project import Project
 from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
 import sys
 
-class ProjectModel(BaseModel):
-    def get_project_information(self, name=None):
-        if name is None:
-            projects = self.db.collection(u'projects').where(u'owner', u'array_contains', self.uid).stream()
-            return { 'projects': [project.to_dict() for project in projects]}
-        else:
-            projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
-            if projects is None:
-                return status_code.NOT_FOUND
-            return { 'project': project.to_dict() for project in projects }
+class ProjectModel():
+    def __init__(self, id_token):
+        _conn_tool = ConnTool(id_token)
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
 
+    def get_project_information(self, name):
+        projects = self._db.collection(u'projects').where(u'name', u'==', name).stream()
+        if projects is None:
+            return status_code.NOT_FOUND
+        return { 'project': project.to_dict() for project in projects }
+
+    def get_projects_information(self):
+        projects = self._db.collection(u'projects').where(u'owner', u'array_contains', self._uid).stream()
+        return { 'projects': [project.to_dict() for project in projects]}
+    
     def add_project(self, name, owner):
         if self.__is_project_name_exist(name):
             return status_code.BAD_REQUEST
@@ -23,16 +28,16 @@ class ProjectModel(BaseModel):
         pid = self.__next_project_id()
         project = Project(pid=pid, name=name, owner=list(owner))
 
-        self.db.collection(u'projects').document().set(project.to_dict())
+        self._db.collection(u'projects').document().set(project.to_dict())
 
         return status_code.OK
 
     def __is_project_name_exist(self, name):
-        projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
+        projects = self._db.collection(u'projects').where(u'name', u'==', name).stream()
         return not is_iter_empty(projects)[0]
 
     def __next_project_id(self):
-        projects = self.db.collection(u'projects').stream()
+        projects = self._db.collection(u'projects').stream()
         if projects is None:
             return 1
         *lst, last = projects
@@ -43,7 +48,7 @@ class ProjectModel(BaseModel):
         if not self.__is_project_name_exist(name):
             return status_code.NOT_FOUND
 
-        projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
+        projects = self._db.collection(u'projects').where(u'name', u'==', name).stream()
         for project in projects:
             project.reference.delete()
         return status_code.OK
@@ -52,7 +57,7 @@ class ProjectModel(BaseModel):
         if not self.__is_project_name_exist(name):
             return status_code.NOT_FOUND
 
-        project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name))
+        project = self.__get_unique(self._db.collection(u'projects').where(u'name', u'==', name))
         project_dict = self.__init_project(project)
 
         update_data = {}

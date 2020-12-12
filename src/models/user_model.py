@@ -1,4 +1,4 @@
-from models.base_model import BaseModel
+from conn_tool import ConnTool
 from entities.user import User
 from common import status_code, error_code
 from common.status_code import is_client_error
@@ -7,28 +7,29 @@ import requests
 import json
 
 
-class UserModel(BaseModel):
-    def get_user_information(self, uid=None):
-        if uid is None:
-            users = self.db.collection(u'users').stream()
-            return {'users': user.to_dict() for user in users}
-        else:
-            users = self.db.collection(u'users').where(
-                u'uid', u'==', uid).stream()
-            is_empty, users = is_iter_empty(users)
-            if is_empty:
-                return error_code.NO_SUCH_ELEMENT
-            users = self.db.collection(u'users').where(
-                u'uid', u'==', uid).stream()
-            return {'user': user.to_dict() for user in users}
+class UserModel():
+    def __init__(self, id_token):
+        _conn_tool = ConnTool(id_token)
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
+
+    def get_user_information(self):
+        users = self._db.collection(u'users').where(
+            u'uid', u'==', self._uid).stream()
+        is_empty, users = is_iter_empty(users)
+        if is_empty:
+            return error_code.NO_SUCH_ELEMENT
+        users = self._db.collection(u'users').where(
+            u'uid', u'==', self._uid).stream()
+        return {'user': user.to_dict() for user in users}
 
     def add_user(self, name, email):
-        if self.__is_uid_exist(self.uid) or self.__is_email_exist(self.uid):
+        if self.__is_uid_exist(self._uid) or self.__is_email_exist(self._uid):
             return status_code.BAD_REQUEST
 
-        user = User(uid=self.uid, name=name, email=email)
+        user = User(uid=self._uid, name=name, email=email)
 
-        self.db.collection(u'users').document().set(user.to_dict())
+        self._db.collection(u'users').document().set(user.to_dict())
 
         return status_code.OK
 
@@ -53,11 +54,11 @@ class UserModel(BaseModel):
             return resp["error_description"], status_code.BAD_REQUEST
 
     def __is_uid_exist(self, uid):
-        users = self.db.collection(u'users').where(
-            u'uid', u'==', self.uid).stream()
+        users = self._db.collection(u'users').where(
+            u'uid', u'==', self._uid).stream()
         return not is_iter_empty(users)[0]
 
     def __is_email_exist(self, email):
-        users = self.db.collection(u'users').where(
+        users = self._db.collection(u'users').where(
             u'email', u'==', email).stream()
         return not is_iter_empty(users)[0]
