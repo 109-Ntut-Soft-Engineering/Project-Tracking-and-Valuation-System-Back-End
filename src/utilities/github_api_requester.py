@@ -1,11 +1,11 @@
 from github import Github
 from github import Repository
 from github import AuthenticatedUser
-from utilities.git_object_parser import GitObjectParser
-# from git_object_parser import GitObjectParser
+from utilities.github_object_parser import GithubObjectParser
+from utilities.requester import Requester
 
 
-class GitApiRequester(object):
+class GithubApiRequester(Requester):
     def __init__(self, token):
         self.git = Github(token)
 
@@ -17,10 +17,10 @@ class GitApiRequester(object):
         rp_info["name"] = rp.name
 
         # deal with issues
-        rp_info["issues"] = self.get_issues()
+        rp_info["issues"] = self.get_issues(rp)
 
         # deal with code frequeny
-        rp_info["code_freq"] = self.get_stats_code_frequency(rp)
+        rp_info["code_freq"] = self.get_code_freq(rp)
 
         # deal with commits
         rp_info['commits'] = self.get_commits(rp)
@@ -44,17 +44,17 @@ class GitApiRequester(object):
             print("e")
             return None
 
-    def get_issues(self):
+    def get_issues(self, rp):
         issues = rp.get_issues()
-        return GitObjectParser.parser_issues(issues)
+        return GithubObjectParser.parser_issues(issues)
 
-    def get_stats_code_frequency(self, rp) -> list:
-        stats_code_frequency = rp.get_stats_code_frequency()
-        return GitObjectParser.parser_stats_code_frequencies(stats_code_frequency)
+    def get_code_freq(self, rp) -> list:
+        stats_code_frequency = rp.get_code_freq()
+        return GithubObjectParser.parser_stats_code_frequencies(stats_code_frequency)
 
     def get_commits(self, rp):
         commits = rp.get_commits()
-        return GitObjectParser.parser_commits(commits)
+        return GithubObjectParser.parser_commits(commits)
 
     def __parse_url(self, url):
         print('url', url)
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     user = "s88037zz@gmail.com"
     password ='asd87306128'
     token = ' ef4164107b7e4e2505abd8fced70951f44e51964'
-    requester = GitApiRequester(token)
+    requester = GithubApiRequester(token)
     user = requester.get_user()
     print(user.name)
 

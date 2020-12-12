@@ -1,5 +1,5 @@
 from conn_tool import ConnTool
-from utilities.git_api_requester import  GitApiRequester
+from utilities.github_api_requester import  GithubApiRequester
 from entities.commit import Commit
 from entities.commits import Commits
 import sys
@@ -32,7 +32,7 @@ class ProjectCommitModel():
         user = "s88037zz@gmail.com"
         password ='asd87306128'
         token = ' ef4164107b7e4e2505abd8fced70951f44e51964'
-        requester = GitApiRequester(token)
+        requester = GithubApiRequester(token)
 
         commit_messages = []
         for repository in repositories:

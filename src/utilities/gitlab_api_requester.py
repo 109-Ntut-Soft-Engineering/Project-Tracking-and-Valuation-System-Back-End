@@ -1,4 +1,5 @@
 import gitlab
+from utilities.requester import Requester
 
 
 class GitlabApiRequester:
@@ -6,7 +7,7 @@ class GitlabApiRequester:
         self.gitlab = gitlab.Gitlab('https://gitlab.com/', private_token=token)
         self.gitlab.auth()
 
-    def get_project_by_name(self, group_name, project_name):
+    def get_repository_by_name(self, group_name, project_name):
         group = self.gitlab.groups.get(group_name)
         if group is None:
             print('Cant find', group_name)
@@ -20,36 +21,33 @@ class GitlabApiRequester:
                     return project
             return None
 
-    def get_project_by_url(self, url):
+    def get_repository_by_url(self, url):
         'https://gitlab.com/s88037zz/soft-engineering-front-end.git'
         if 'https://gitlab.com/' in url:
             url = url.replace('https://gitlab.com/', '').replace('.git', '')
             group_name, project_name = url.split('/')
             print('gp_name, pro_name:', group_name, project_name)
-            return self.get_project_by_name(group_name, project_name)
+            return self.get_repository_by_name(group_name, project_name)
         else:
             raise ValueError('Url is not from gitlab source.')
 
 
-    def get_commits(self, project):
-        return self.gitlab.projects.get(project.id, lazy=True).commits.list()
+    def get_commits(self, rp):
+        return self.gitlab.projects.get(rp.id, lazy=True).commits.list()
 
-    def get_issues(self, project):
-        return self.gitlab.projects.get(project.id, lazy=True).issues.list()
+    def get_issues(self, rp):
+        return self.gitlab.projects.get(rp.id, lazy=True).issues.list()
 
-    def get_code_freq(self):
+    def get_code_freq(self, rp):
         return
 
 if __name__ == '__main__':
-    # gl = gitlab.Gitlab('https://gitlab.com/', private_token='eijr9MQx7NCzwSnGfBFK')
-    # gl.auth()
-
     token = 'eijr9MQx7NCzwSnGfBFK'
     gitlab = GitlabApiRequester(token)
     url = 'https://gitlab.com/ase/ase.git'
 
     # search by url
-    project = gitlab.get_project_by_url(url)
+    project = gitlab.get_repository_by_url(url)
     print(type(project))
     print(project.id)
 

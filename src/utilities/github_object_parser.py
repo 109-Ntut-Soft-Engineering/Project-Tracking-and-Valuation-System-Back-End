@@ -2,23 +2,23 @@ from github import Label, Issue, StatsCodeFrequency\
     , Commit, GitCommit, GitAuthor, CommitStats, NamedUser
 
 
-class GitObjectParser:
+class GithubObjectParser:
     @staticmethod
     def parser_commits(commits: enumerate) -> list:
         commits_info = []
         for commit in commits:
             commits_info.append(
-                GitObjectParser.parser_commit(commit)
+                GithubObjectParser.parser_commit(commit)
             )
         return commits_info
 
     @staticmethod
     def parser_commit(commit: Commit) -> dict:
         info = {}
-        author = GitObjectParser.parser_named_user(commit.author)
+        author = GithubObjectParser.parser_named_user(commit.author)
         info["author"] = author
-        info['commit'] = GitObjectParser.parser_git_commit(commit.commit)
-        info['stats'] = GitObjectParser.parser_commit_stats(commit.stats)
+        info['commit'] = GithubObjectParser.parser_git_commit(commit.commit)
+        info['stats'] = GithubObjectParser.parser_commit_stats(commit.stats)
         return info
 
     @staticmethod
@@ -26,7 +26,7 @@ class GitObjectParser:
         code_frequencies_info = []
         for code_freq in stats_code_frequencies:
             code_frequencies_info.append(
-                GitObjectParser.parser_stats_code_frequency(code_freq)
+                GithubObjectParser.parser_stats_code_frequency(code_freq)
             )
         return code_frequencies_info
 
@@ -42,7 +42,7 @@ class GitObjectParser:
     def parser_issues(issues: list) -> list:
         issues_info = []
         for issue in issues:
-            issue_info = GitObjectParser.parser_issue(issue)
+            issue_info = GithubObjectParser.parser_issue(issue)
             issues_info.append(issue_info)
         return issues_info
 
@@ -50,7 +50,7 @@ class GitObjectParser:
     def parser_issue(issue: Issue) -> dict:
         info = {}
         info["name"] = issue.title
-        info["labels"] = GitObjectParser.parser_labels(issue.labels)
+        info["labels"] = GithubObjectParser.parser_labels(issue.labels)
         info["url"] = issue.url
         return info
 
@@ -58,7 +58,7 @@ class GitObjectParser:
     def parser_labels(labels: list) -> list:
         labels_info = []
         for label in labels:
-            label_info = GitObjectParser.parser_label(label)
+            label_info = GithubObjectParser.parser_label(label)
             labels_info.append(label_info)
         return labels_info
 
@@ -79,7 +79,7 @@ class GitObjectParser:
     @staticmethod
     def parser_git_commit(git_commit: GitCommit) -> dict:
         info = {}
-        info["author"] = GitObjectParser.parser_git_author(git_commit.author)
+        info["author"] = GithubObjectParser.parser_git_author(git_commit.author)
         info["message"] = git_commit.message
         info['html_url'] = git_commit.html_url
         info['url'] = git_commit.url

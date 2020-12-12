@@ -1,4 +1,4 @@
-from utilities.git_api_requester import GitApiRequester
+from utilities.github_api_requester import GithubApiRequester
 from conn_tool import ConnTool
 
 
@@ -13,7 +13,7 @@ class ProjectCodeFrequencyModel():
         print('project:', project)
         repositories = self.__get_repositories(project)
 
-        requester = GitApiRequester(token)
+        requester = GithubApiRequester(token)
         code_freqies= []
         for repository in repositories:
             # 用url拿到rp
@@ -23,7 +23,7 @@ class ProjectCodeFrequencyModel():
             else:
                 # get_stats_code_frequency 可以換成你要的
                 # 先不要用get_rp_info 他會撈code_freq, issues, commits會有點久
-                code_freq = requester.get_stats_code_frequency(rp)
+                code_freq = requester.get_code_freq(rp)
                 code_freqies.append(code_freq)
 
         code_freq_series = {}
