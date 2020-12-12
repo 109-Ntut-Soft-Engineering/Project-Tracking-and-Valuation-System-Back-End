@@ -1,13 +1,18 @@
-from models.base_model import BaseModel
+from conn_tool import ConnTool
 from utilities.git_api_requester import  GitApiRequester
 from entities.commit import Commit
 from entities.commits import Commits
 import sys
 
 
-class ProjectCommitModel(BaseModel):
+class ProjectCommitModel():
+    def __init__(self, id_token):
+        _conn_tool = ConnTool(id_token)
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
+
     def get_project_commit_info(self, name):
-        project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name)).to_dict()
+        project = self.__get_unique(self._db.collection(u'projects').where(u'name', u'==', name)).to_dict()
         commits = self.__get_commits(project)
         print(commits, file=sys.stderr)
         return {"commits": commits.to_dict() }
@@ -16,7 +21,7 @@ class ProjectCommitModel(BaseModel):
         repositories = []
         rids = map(int, project[u'repositories'])
         for rid in rids:
-            repository = self.__get_unique(self.db.collection(u'repositories').where(u'rid', u'==', rid))
+            repository = self.__get_unique(self._db.collection(u'repositories').where(u'rid', u'==', rid))
             repository = repository.to_dict()
             repositories.append(repository)
         return repositories

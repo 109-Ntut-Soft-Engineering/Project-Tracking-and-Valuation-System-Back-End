@@ -1,13 +1,11 @@
 from flask import jsonify
 from flask_restful import Resource
-from resources.base_resource import BaseResource
 from models.project_commit_model import ProjectCommitModel
 import sys
 
-class ProjectCommitResource(BaseResource):
+class ProjectCommitResource(Resource):
     def __init__(self):
-        super().__init__()
-        self._model = ProjectCommitModel(self.db, self.uid)
+        self._model = ProjectCommitModel('test_token')
 
     def get(self, name):
         print('name = ' + name, file=sys.stderr)

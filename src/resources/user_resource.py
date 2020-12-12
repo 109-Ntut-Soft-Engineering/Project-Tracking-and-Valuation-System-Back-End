@@ -1,20 +1,17 @@
 from flask import jsonify, abort
 from flask_restful import Resource, reqparse
-from resources.base_resource import BaseResource
-from entities.user import User
 from models.user_model import UserModel
 from common import error_code, status_code
 from common.util import is_iter_empty
 from common.status_code import is_client_error
 
 
-class UserResource(BaseResource):
+class UserResource(Resource):
     def __init__(self):
-        super().__init__()
-        self._model = UserModel(self.db, self.uid)
+        self._model = UserModel('test_token')
 
     def get(self):
-        data = self._model.get_user_information(self.uid)
+        data = self._model.get_user_information()
         if data == error_code.NO_SUCH_ELEMENT:
             abort(404)
         return jsonify(data)

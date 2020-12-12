@@ -1,16 +1,14 @@
 from flask import jsonify, abort
-from flask_restful import reqparse
-from resources.base_resource import BaseResource
+from flask_restful import Resource, reqparse
 from models.project_model import ProjectModel
 from common.status_code import is_client_error
 
-class ProjectsResource(BaseResource):
+class ProjectsResource(Resource):
     def __init__(self):
-        super().__init__()
-        self._model = ProjectModel(self.db, self.uid)
+        self._model = ProjectModel('test_token')
 
     def get(self):
-        data = self._model.get_project_information()
+        data = self._model.get_projects_information()
         if is_client_error(data):
             abort(data)
         return jsonify(data)
