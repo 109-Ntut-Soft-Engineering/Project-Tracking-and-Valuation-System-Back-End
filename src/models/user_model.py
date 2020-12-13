@@ -50,7 +50,7 @@ class UserModel():
 
         if "access_token" in resp:
             # print(resp["access_token"])
-            user = self.db.collection('users').document(self._uid)
+            user = self._db.collection('users').document(self._uid)
             user.update({'Github': resp["access_token"]})
             return 'Get access token success !', status_code.OK
         else:

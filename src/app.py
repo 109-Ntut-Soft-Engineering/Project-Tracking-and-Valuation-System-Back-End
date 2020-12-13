@@ -19,7 +19,7 @@ CORS(app)
 
 api.add_resource(UserResource, '/user')
 api.add_resource(ProjectsResource, '/project')
-api.add_resource(ProjectResource, '/project/<string:name>')
+api.add_resource(ProjectResource, '/project/<string:pid>')
 api.add_resource(ProjectCommitResource, '/project/<string:name>/commit')
 api.add_resource(AuthResource, '/user/auth')
 

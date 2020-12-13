@@ -9,7 +9,7 @@ class ProjectsResource(Resource):
         self._model = ProjectModel()
 
     def get(self):
-        data = self._model.get_projects_information()
+        data = self._model.get_projects_list()
         if is_client_error(data):
             abort(data)
         return jsonify(data)
