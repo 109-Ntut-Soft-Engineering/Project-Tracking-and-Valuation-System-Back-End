@@ -4,6 +4,7 @@ from resources.base_resource import BaseResource
 from models.project_model import ProjectModel
 from common.status_code import is_client_error
 
+
 class ProjectsResource(BaseResource):
     def __init__(self):
         super().__init__()
@@ -18,7 +19,8 @@ class ProjectsResource(BaseResource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', required=True, help='name is required.')
-        parser.add_argument('owner', action='append', required=True, help='owner is required.')
+        parser.add_argument('owner', action='append',
+                            required=True, help='owner is required.')
         args = parser.parse_args()
 
         message = self._model.add_project(args['name'], args['owner'])

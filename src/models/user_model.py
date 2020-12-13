@@ -13,24 +13,22 @@ class UserModel(BaseModel):
             users = self.db.collection(u'users').stream()
             return {'users': user.to_dict() for user in users}
         else:
-            users = self.db.collection(u'users').where(
-                u'uid', u'==', uid).stream()
-            is_empty, users = is_iter_empty(users)
-            if is_empty:
-                return error_code.NO_SUCH_ELEMENT
-            users = self.db.collection(u'users').where(
-                u'uid', u'==', uid).stream()
-            return {'user': user.to_dict() for user in users}
+            user = self.db.collection('users').document(uid)
+            return user.to_dict()
+
+    def get_user_githubToken(self):
+        info = self.db.collection('users').document(self.uid).get().to_dict()
+        if 'Github' in info:
+            return info['Github']
+        else:
+            return None
 
     def add_user(self, name, email):
-        if self.__is_uid_exist(self.uid) or self.__is_email_exist(self.uid):
-            return status_code.BAD_REQUEST
 
-        user = User(uid=self.uid, name=name, email=email)
+        user = User(name=name, email=email)
+        self.db.collection(u'users').document(self.uid).set(user.to_dict())
 
-        self.db.collection(u'users').document().set(user.to_dict())
-
-        return status_code.OK
+        return '新增uid成功', status_code.OK
 
     def set_user_token(self, code):
         parameters = {
@@ -47,17 +45,9 @@ class UserModel(BaseModel):
         resp = json.loads(r.text)
 
         if "access_token" in resp:
-            print(resp["access_token"])
+            # print(resp["access_token"])
+            user = self.db.collection('users').document(self.uid)
+            user.update({'Github': resp["access_token"]})
             return 'Get access token success !', status_code.OK
         else:
             return resp["error_description"], status_code.BAD_REQUEST
-
-    def __is_uid_exist(self, uid):
-        users = self.db.collection(u'users').where(
-            u'uid', u'==', self.uid).stream()
-        return not is_iter_empty(users)[0]
-
-    def __is_email_exist(self, email):
-        users = self.db.collection(u'users').where(
-            u'email', u'==', email).stream()
-        return not is_iter_empty(users)[0]

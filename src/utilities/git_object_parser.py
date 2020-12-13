@@ -1,5 +1,4 @@
-from github import Label, Issue, StatsCodeFrequency\
-    , Commit, GitCommit, GitAuthor, CommitStats, NamedUser
+from github import Label, Issue, StatsCodeFrequency, Commit, GitCommit, GitAuthor, CommitStats, NamedUser
 
 
 class GitObjectParser:
@@ -99,4 +98,11 @@ class GitObjectParser:
         info["additions"] = commit_stats.additions
         info['deletions'] = commit_stats.deletions
         info['total'] = commit_stats.total
+        return info
+
+    @staticmethod
+    def parser_repo_list(repos):
+        info = {}
+        info['repos'] = [{'name': repo.name, 'id': 'github '+str(repo.id), 'source': 'Github'}
+                         for repo in (repos)]
         return info
