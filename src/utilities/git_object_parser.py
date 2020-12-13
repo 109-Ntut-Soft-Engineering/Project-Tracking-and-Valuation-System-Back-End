@@ -103,6 +103,6 @@ class GitObjectParser:
     @staticmethod
     def parser_repo_list(repos):
         info = {}
-        info['repos'] = [{'label': repo.name, 'value': repo.id}
+        info['repos'] = [{'name': repo.name, 'id': 'github '+str(repo.id), 'source': 'Github'}
                          for repo in (repos)]
         return info

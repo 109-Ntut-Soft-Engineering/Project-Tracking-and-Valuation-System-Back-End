@@ -5,45 +5,45 @@ from common.status_code import is_client_error
 from common.util import is_iter_empty
 import sys
 
+
 class ProjectModel(BaseModel):
-    def get_project_information(self, name=None):
-        if name is None:
-            projects = self.db.collection(u'projects').where(u'owner', u'array_contains', self.uid).stream()
-            return { 'projects': [project.to_dict() for project in projects]}
+    def get_project_information(self, pid=None):
+        if pid is None:
+            projects = self.db.collection('projects').where(
+                'owner', '==', self.uid).get()
+            projList = []
+            for project in projects:
+                projDic = project.to_dict()
+                projDic.update({'id': project.id})
+                projList.append(projDic)
+            return {'projects': projList}
         else:
-            projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
-            if projects is None:
+            project = self.db.collection('projects').document(pid).get()
+            if project is None:
                 return status_code.NOT_FOUND
-            return { 'project': project.to_dict() for project in projects }
+            return {'project': project.to_dict()}
 
     def add_project(self, name):
         if self.__is_project_name_exist(name):
             return status_code.BAD_REQUEST
 
-        pid = self.__next_project_id()
-        project = Project(pid=pid, name=name, owner=list(self.uid))
+        project = Project(name=name, owner=self.uid)
 
-        self.db.collection(u'projects').document().set(project.to_dict())
+        self.db.collection('projects').document().set(project.to_dict())
 
         return status_code.OK
 
     def __is_project_name_exist(self, name):
-        projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
+        projects = self.db.collection(u'projects').where(
+            u'name', u'==', name).stream()
         return not is_iter_empty(projects)[0]
-
-    def __next_project_id(self):
-        projects = self.db.collection(u'projects').stream()
-        if projects is None:
-            return 1
-        *lst, last = projects
-        last_project = last.to_dict()
-        return int(last.to_dict()['pid']) + 1
 
     def delete_project(self, name):
         if not self.__is_project_name_exist(name):
             return status_code.NOT_FOUND
 
-        projects = self.db.collection(u'projects').where(u'name', u'==', name).stream()
+        projects = self.db.collection(u'projects').where(
+            u'name', u'==', name).stream()
         for project in projects:
             project.reference.delete()
         return status_code.OK
@@ -52,14 +52,17 @@ class ProjectModel(BaseModel):
         if not self.__is_project_name_exist(name):
             return status_code.NOT_FOUND
 
-        project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name))
+        project = self.__get_unique(self.db.collection(
+            u'projects').where(u'name', u'==', name))
         project_dict = self.__init_project(project)
 
         update_data = {}
-        code = self.__set_update_data(project_dict, owner, update_data, 'owner')
+        code = self.__set_update_data(
+            project_dict, owner, update_data, 'owner')
         if is_client_error(code):
             return code
-        code = self.__set_update_data(project_dict, repositories, update_data, 'repositories')
+        code = self.__set_update_data(
+            project_dict, repositories, update_data, 'repositories')
         if is_client_error(code):
             return code
 
@@ -80,7 +83,8 @@ class ProjectModel(BaseModel):
     def __set_update_data(self, origin, update, update_data, field_name):
         code = self.__validate_update_array(origin, update, field_name)
         if code == status_code.OK:
-            update_data[field_name] = list(set(update) | set(origin[field_name]))
+            update_data[field_name] = list(
+                set(update) | set(origin[field_name]))
         elif is_client_error(code):
             return code
         return status_code.OK

@@ -33,7 +33,8 @@ class ProjectResource(BaseResource):
         parser.add_argument('repositories', action='append', required=False)
         args = parser.parse_args()
 
-        message = self._model.update_project(name, args['owner'], args['repositories'])
+        message = self._model.update_project(
+            name, args['owner'], args['repositories'])
         if is_client_error(message):
             return message
         return message
