@@ -1,12 +1,11 @@
 from github import Github
 from github import Repository
 from github import AuthenticatedUser
-from utilities.git_object_parser import GitObjectParser
-# from git_object_parser import GitObjectParser
-from firebase_admin import auth
+from utilities.github_object_parser import GithubObjectParser
+from utilities.requester import Requester
 
 
-class GitApiRequester(object):
+class GithubApiRequester(Requester):
     def __init__(self, token):
         self.git = Github(token)
 
@@ -22,14 +21,14 @@ class GitApiRequester(object):
         rp_info["issues"] = self.get_issues(rp)
 
         # deal with code frequeny
-        rp_info["code_freq"] = self.get_stats_code_frequency(rp)
+        rp_info["code_freq"] = self.get_code_freq(rp)
 
         # deal with commits
         rp_info['commits'] = self.get_commits(rp)
         return rp_info
 
     def get_repoList(self):
-        return GitObjectParser.parser_repo_list(self.git.get_user().get_repos())
+        return GithubObjectParser.parser_repo_list(self.git.get_user().get_repos())
 
     def get_user(self) -> AuthenticatedUser:
         return self.git.get_user()
@@ -51,15 +50,15 @@ class GitApiRequester(object):
 
     def get_issues(self, rp):
         issues = rp.get_issues()
-        return GitObjectParser.parser_issues(issues)
+        return GithubObjectParser.parser_issues(issues)
 
-    def get_stats_code_frequency(self, rp) -> list:
-        stats_code_frequency = rp.get_stats_code_frequency()
-        return GitObjectParser.parser_stats_code_frequencies(stats_code_frequency)
+    def get_code_freq(self, rp) -> list:
+        stats_code_frequency = rp.get_code_freq()
+        return GithubObjectParser.parser_stats_code_frequencies(stats_code_frequency)
 
     def get_commits(self, rp):
         commits = rp.get_commits()
-        return GitObjectParser.parser_commits(commits)
+        return GithubObjectParser.parser_commits(commits)
 
     def __parse_url(self, url):
         print('url', url)
@@ -75,7 +74,7 @@ if __name__ == '__main__':
     user = "s88037zz@gmail.com"
     password = 'asd87306128'
     token = '445d5e39b2d3f4abc9c0063fe3ff1f689470c3c5'
-    requester = GitApiRequester(token)
+    requester = GithubApiRequester(token)
     # repos = requester.get_repoList()
     # print(repos)
 
@@ -85,4 +84,4 @@ if __name__ == '__main__':
     # rp_info = requester.get_rp_info(rp)
     # print(json.dumps(rp_info, indent=1))
 
-    print(GitObjectParser.parser_repo_list(requester.get_repoList()))
+    print(GithubObjectParser.parser_repo_list(requester.get_repoList()))

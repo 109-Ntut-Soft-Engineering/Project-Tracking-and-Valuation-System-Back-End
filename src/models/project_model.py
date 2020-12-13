@@ -1,4 +1,4 @@
-from models.base_model import BaseModel
+from conn_tool import ConnTool
 from entities.project import Project
 from common import status_code, error_code
 from common.status_code import is_client_error
@@ -6,24 +6,23 @@ from common.util import is_iter_empty
 import sys
 
 
-class ProjectModel(BaseModel):
-    def get_project_information(self, pid=None):
-        if pid is None:
-            projects = self.db.collection('projects').where(
-                'owner', '==', self.uid).get()
-            projList = []
-            for project in projects:
-                projDic = project.to_dict()
-                projDic.update({'id': project.id})
-                projList.append(projDic)
-            return {'projects': projList}
-        else:
-            project = self.db.collection('projects').document(pid).get()
-            if project is None:
-                return status_code.NOT_FOUND
-            return {'project': project.to_dict()}
+class ProjectModel():
+    def __init__(self):
+        _conn_tool = ConnTool()
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
 
-    def add_project(self, name):
+    def get_projects_information(self):
+        projects = self._db.collection('projects').where(
+            'owner', '==', self._uid).get()
+        projList = []
+        for project in projects:
+            projDic = project.to_dict()
+            projDic.update({'id': project.id})
+            projList.append(projDic)
+        return {'projects': projList}
+
+    def add_project(self, name, owner):
         if self.__is_project_name_exist(name):
             return status_code.BAD_REQUEST
 
@@ -42,7 +41,7 @@ class ProjectModel(BaseModel):
         if not self.__is_project_name_exist(name):
             return status_code.NOT_FOUND
 
-        projects = self.db.collection(u'projects').where(
+        projects = self._db.collection(u'projects').where(
             u'name', u'==', name).stream()
         for project in projects:
             project.reference.delete()
@@ -52,7 +51,7 @@ class ProjectModel(BaseModel):
         if not self.__is_project_name_exist(name):
             return status_code.NOT_FOUND
 
-        project = self.__get_unique(self.db.collection(
+        project = self.__get_unique(self._db.collection(
             u'projects').where(u'name', u'==', name))
         project_dict = self.__init_project(project)
 

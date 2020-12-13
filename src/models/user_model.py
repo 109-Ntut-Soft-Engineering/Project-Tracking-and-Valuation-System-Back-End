@@ -1,23 +1,29 @@
-from models.base_model import BaseModel
+from conn_tool import ConnTool
 from entities.user import User
 from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
 import requests
 import json
+from conn_tool import ConnTool
 
 
-class UserModel(BaseModel):
+class UserModel():
+    def __init__(self):
+        _conn_tool = ConnTool()
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
+
     def get_user_information(self, uid=None):
         if uid is None:
-            users = self.db.collection(u'users').stream()
+            users = self._db.collection(u'users').stream()
             return {'users': user.to_dict() for user in users}
         else:
-            user = self.db.collection('users').document(uid)
+            user = self._db.collection('users').document(uid)
             return user.to_dict()
 
     def get_user_githubToken(self):
-        info = self.db.collection('users').document(self.uid).get().to_dict()
+        info = self._db.collection('users').document(self._uid).get().to_dict()
         if 'Github' in info:
             return info['Github']
         else:
@@ -26,9 +32,7 @@ class UserModel(BaseModel):
     def add_user(self, name, email):
 
         user = User(name=name, email=email)
-        self.db.collection(u'users').document(self.uid).set(user.to_dict())
-
-        return '新增uid成功', status_code.OK
+        self._db.collection(u'users').document(self._uid).set(user.to_dict())
 
     def set_user_token(self, code):
         parameters = {
@@ -46,7 +50,7 @@ class UserModel(BaseModel):
 
         if "access_token" in resp:
             # print(resp["access_token"])
-            user = self.db.collection('users').document(self.uid)
+            user = self.db.collection('users').document(self._uid)
             user.update({'Github': resp["access_token"]})
             return 'Get access token success !', status_code.OK
         else:

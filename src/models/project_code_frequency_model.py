@@ -1,14 +1,19 @@
-from utilities.git_api_requester import GitApiRequester
-from models.base_model import BaseModel
+from utilities.github_api_requester import GithubApiRequester
+from conn_tool import ConnTool
 
 
-class ProjectCodeFrequencyModel(BaseModel):
+class ProjectCodeFrequencyModel():
+    def __init__(self, id_token):
+        _conn_tool = ConnTool(id_token)
+        self._db = _conn_tool.db
+        self._uid = _conn_tool.uid
+
     def get_code_freq(self, name, token):
         project = self.__get_project(name)
         print('project:', project)
         repositories = self.__get_repositories(project)
 
-        requester = GitApiRequester(token)
+        requester = GithubApiRequester(token)
         code_freqies= []
         for repository in repositories:
             # 用url拿到rp
@@ -18,7 +23,7 @@ class ProjectCodeFrequencyModel(BaseModel):
             else:
                 # get_stats_code_frequency 可以換成你要的
                 # 先不要用get_rp_info 他會撈code_freq, issues, commits會有點久
-                code_freq = requester.get_stats_code_frequency(rp)
+                code_freq = requester.get_code_freq(rp)
                 code_freqies.append(code_freq)
 
         code_freq_series = {}
@@ -36,7 +41,7 @@ class ProjectCodeFrequencyModel(BaseModel):
         return date_code
 
     def __get_project(self, name):
-        project = self.__get_unique(self.db.collection(u'projects').where(u'name', u'==', name)).to_dict()
+        project = self.__get_unique(self._db.collection(u'projects').where(u'name', u'==', name)).to_dict()
         return project
 
     def __get_repositories(self, project):
@@ -44,7 +49,7 @@ class ProjectCodeFrequencyModel(BaseModel):
         rids = map(int, project[u'repositories'])
         try:
             for rid in rids:
-                repository = self.__get_unique(self.db.collection(u'repositories').where(u'rid', u'==', rid))
+                repository = self.__get_unique(self._db.collection(u'repositories').where(u'rid', u'==', rid))
                 repository = repository.to_dict()
                 print('repository:', repository)
                 repositories.append(repository)
