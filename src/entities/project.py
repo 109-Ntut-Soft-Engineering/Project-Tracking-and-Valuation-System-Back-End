@@ -23,7 +23,8 @@ class Project():
         dest = {
             'name': self.name,
             'owner': self.owner,
-            'repositories': self.repositories
+            'repositories': self.repositories,
+            'updated': self.updated
         }
 
         # if self.pid:
@@ -43,5 +44,6 @@ class Project():
                 name={self.name}, \
                 owner={self.owner}, \
                 repositories={self.repositories}\
+                updated={self.updated}\
             )'
         )

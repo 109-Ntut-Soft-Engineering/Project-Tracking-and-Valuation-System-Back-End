@@ -7,6 +7,7 @@ from common.util import is_iter_empty
 from conn_tool import ConnTool
 from models.user_model import UserModel
 from utilities.github_api_requester import GithubApiRequester
+from models.project_model import ProjectModel
 
 
 class RepositoryResource(Resource):
@@ -16,15 +17,23 @@ class RepositoryResource(Resource):
         self._uid = conn_tool.uid
         self._userModel = UserModel()
 
-    def get(self, source):
-        if source == 'Github':
-            return self.__get_github_repos()
+    def get(self, pid):
 
-    def __get_github_repos(self):
+        return self.__get_avail_repos(pid)
+
+    def __get_avail_repos(self, pid):
         token = self._userModel.get_user_githubToken()
         if token != None:
             requester = GithubApiRequester(token)
-            return jsonify(requester.get_repoList())
+            existRepos = self._db.collection(
+                'projects').document(pid).get().to_dict()
+            userRepos = requester.get_repoList()['repos']
+            info = {'repos': []}
+            for repo in userRepos:
+
+                if str(repo['id']) not in existRepos['repositories']['Github']:
+                    info['repos'].append(repo)
+            return jsonify(info)
         else:
             return {
                 'message': '尚未連結Github'

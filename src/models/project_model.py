@@ -26,6 +26,7 @@ class ProjectModel():
             projDic = project.to_dict()
             projDic.update({'id': project.id})
             projList.append(projDic)
+
         return {'projects': projList}
 
     def get_project_repos(self, pid):
@@ -35,7 +36,7 @@ class ProjectModel():
         if token != None:
             requester = GithubApiRequester(token)
             for repo in requester.get_repoList()['repos']:
-                if repo['id'].split()[1] in repos['repositories']['Github']:
+                if str(repo['id']) in repos['repositories']['Github']:
                     info['repos'].append(repo)
             return jsonify(info)
         else:
@@ -66,12 +67,32 @@ class ProjectModel():
             project.reference.delete()
         return status_code.OK
 
-    def update_project(self, pid, collaborator,  repositories, name):
+    def update_project(self, pid, data):
         project = self._db.collection('projects').document(pid)
 
-        print(repositories)
+        print(data)
+
         if project.get().exists:
-            project.update({'repositories.Github': repositories})
+
+            if 'repositories' in data:
+                if data['repositories']['action'] == 'update':
+                    project.update(
+                        {'repositories.Github': firestore.ArrayUnion(data['repositories']['Github']),
+                         'updated': firestore.SERVER_TIMESTAMP
+                         })
+                else:
+                    project.update(
+                        {'repositories.Github': firestore.ArrayRemove(data['repositories']['Github']),
+                         'updated': firestore.SERVER_TIMESTAMP
+                         })
+            else:
+                newData = {}
+                if 'name' in data:
+                    newData['name'] = data['name']
+                if 'collaborator' in data:
+                    newData['collaborator'] = data['collaborator']
+                project.update(newData)
+
         else:
             return status_code.NOT_FOUND
         # if not self.__is_project_name_exist(name):
