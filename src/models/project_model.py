@@ -41,11 +41,11 @@ class ProjectModel():
             requester = GithubApiRequester(token)
             existRepos = self._db.collection(
                 'projects').document(pid).get().to_dict()
-            userRepos = requester.get_repoList()['repos']
+            userRepos = requester.get_user_repoList()['repos']
             info = {'repos': []}
             for repo in userRepos:
 
-                if str(repo['id']) not in existRepos['repositories']['Github']:
+                if repo['id'] not in existRepos['repositories']['Github']:
                     info['repos'].append(repo)
             return jsonify(info)
         else:
@@ -59,8 +59,8 @@ class ProjectModel():
         info = {'repos': []}
         if token != None:
             requester = GithubApiRequester(token)
-            for repo in requester.get_repoList()['repos']:
-                if str(repo['id']) in repos['repositories']['Github']:
+            for repo in requester.get_user_repoList()['repos']:
+                if repo['id'] in repos['repositories']['Github']:
                     info['repos'].append(repo)
             return jsonify(info)
         else:
@@ -69,8 +69,8 @@ class ProjectModel():
     def get_project_setting(self, pid):
         project = self._db.collection('projects').document(pid).get().to_dict()
         setting = {'setting': {
-            'name': None, 
-            'owner': None, 
+            'name': None,
+            'owner': None,
             'collaborator': []
         }}
         setting['setting']['name'] = project['name']

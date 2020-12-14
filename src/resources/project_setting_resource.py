@@ -26,8 +26,8 @@ class ProjectSettingResource(Resource):
         parser.add_argument('name', action='append', required=False)
 
         args = parser.parse_args()
-        
-        message = self._model.update_project(
+
+        message = self._model.update_setting(
             pid, args['name'], args['collaborator'])
 
         if is_client_error(message):

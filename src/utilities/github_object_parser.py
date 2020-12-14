@@ -103,7 +103,13 @@ class GithubObjectParser:
 
     @staticmethod
     def parser_repo_list(repos):
-        info = {}
-        info['repos'] = [{'name': repo.name, 'id': repo.id, 'source': 'Github'}
-                         for repo in (repos)]
+        info = {'repos': []}
+        for source in (repos):
+            for repo in source:
+                info['repos'].append({
+                    'name': repo.name,
+                    'id': repo.id,
+                    'type': 'Starred' if repos.index(source) == 1 else 'Public'if repo.private == False else 'Private',
+                    'source': 'Github'
+                })
         return info
