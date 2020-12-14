@@ -21,12 +21,13 @@ class Project():
         return project
 
     def to_dict(self):
+
         dest = {
             'name': self.name,
             'owner': self.owner,
-            'collaborator': self.collaborator, 
+            'collaborator': self.collaborator,
             'repositories': self.repositories,
-            'updated': self.updated.to_dict()
+            'updated': self.updated.__str__()
         }
 
         # if self.pid:
@@ -37,6 +38,8 @@ class Project():
         #     dest['owner'] = self.owner
         # if self.repositories:
         #     dest['repositories'] = self.repositories
+        # if self.updated:
+        #     dest['updated'] = self.updated.__str__()
 
         return dest
 
@@ -46,7 +49,7 @@ class Project():
                 name={self.name}, \
                 owner={self.owner}, \
                 collaborator={self.collaborator}, \
-                repositories={self.repositories}\
-                updated={self.updated}\
+                repositories={self.repositories},\
+                updated={self.updated.__str__()}\
             )'
         )

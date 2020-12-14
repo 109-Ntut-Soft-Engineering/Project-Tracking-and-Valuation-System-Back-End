@@ -28,12 +28,13 @@ class ProjectModel():
         proj_list = []
         self.__build_project_list(proj_list, proj_owner)
         self.__build_project_list(proj_list, proj_collab)
-        print(proj_list, file=sys.stderr)
+        # print(proj_list, file=sys.stderr)
         return {'projects': proj_list}, status_code.OK
 
     def __build_project_list(self, proj_list, projects):
         for project in projects:
-            proj_dic = project.to_dict()
+
+            proj_dic = Project.from_dict(project.to_dict()).to_dict()
             proj_dic.update({'id': project.id})
             proj_list.append(proj_dic)
 
@@ -46,7 +47,6 @@ class ProjectModel():
             userRepos = requester.get_user_repoList()['repos']
             info = {'repos': []}
             for repo in userRepos:
-
                 if repo['id'] not in existRepos['repositories']['Github']:
                     info['repos'].append(repo)
             return jsonify(info)
