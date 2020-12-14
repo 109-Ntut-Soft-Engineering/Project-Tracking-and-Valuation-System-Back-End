@@ -29,6 +29,7 @@ class ProjectSettingResource(Resource):
         
         message = self._model.update_project(
             pid, args['name'], args['collaborator'])
+
         if is_client_error(message):
             return message
         return message

@@ -33,7 +33,7 @@ api.add_resource(ProjectCodeFrequencyResource,
                  '/project/code_freq/<string:name>')
 #api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
 #api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
-api.add_resource(RepositoryResource, '/repository/<string:source>')
+api.add_resource(RepositoryResource, '/user/AvailRepository/<string:pid>')
 
 
 # for code frequency

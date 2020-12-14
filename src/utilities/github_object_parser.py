@@ -78,7 +78,8 @@ class GithubObjectParser:
     @staticmethod
     def parser_git_commit(git_commit: GitCommit) -> dict:
         info = {}
-        info["author"] = GithubObjectParser.parser_git_author(git_commit.author)
+        info["author"] = GithubObjectParser.parser_git_author(
+            git_commit.author)
         info["message"] = git_commit.message
         info['html_url'] = git_commit.html_url
         info['url'] = git_commit.url
@@ -103,6 +104,6 @@ class GithubObjectParser:
     @staticmethod
     def parser_repo_list(repos):
         info = {}
-        info['repos'] = [{'name': repo.name, 'id': 'github '+str(repo.id), 'source': 'Github'}
+        info['repos'] = [{'name': repo.name, 'id': repo.id, 'source': 'Github'}
                          for repo in (repos)]
         return info

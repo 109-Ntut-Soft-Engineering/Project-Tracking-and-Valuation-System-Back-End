@@ -17,6 +17,7 @@ class ProjectModel():
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
+        self._userModel = UserModel()
 
     def get_projects_list(self):
         projects_owner = self._db.collection('projects').where(
@@ -34,6 +35,24 @@ class ProjectModel():
             projDic.update({'id': project.id})
             projList.append(projDic)
 
+    def get_avail_repos(self, pid):
+        token = self._userModel.get_user_githubToken()
+        if token != None:
+            requester = GithubApiRequester(token)
+            existRepos = self._db.collection(
+                'projects').document(pid).get().to_dict()
+            userRepos = requester.get_repoList()['repos']
+            info = {'repos': []}
+            for repo in userRepos:
+
+                if str(repo['id']) not in existRepos['repositories']['Github']:
+                    info['repos'].append(repo)
+            return jsonify(info)
+        else:
+            return {
+                'message': '尚未連結Github'
+            }, status_code.NOT_FOUND
+
     def get_project_repos(self, pid):
         repos = self._db.collection('projects').document(pid).get().to_dict()
         token = UserModel().get_user_githubToken()
@@ -41,7 +60,7 @@ class ProjectModel():
         if token != None:
             requester = GithubApiRequester(token)
             for repo in requester.get_repoList()['repos']:
-                if repo['id'].split()[1] in repos['repositories']['Github']:
+                if str(repo['id']) in repos['repositories']['Github']:
                     info['repos'].append(repo)
             return jsonify(info)
         else:
@@ -81,12 +100,23 @@ class ProjectModel():
         project.delete()
         return status_code.OK
 
-    def update_repos(self, pid, repositories):
+    def update_repos(self, pid, data):
         project = self._db.collection('projects').document(pid)
 
-        print(repositories)
+        print(data)
+
         if project.get().exists:
-            project.update({'repositories.Github': repositories})
+            if data['repositories']['action'] == 'update':
+                project.update(
+                    {'repositories.Github': firestore.ArrayUnion(data['repositories']['Github']),
+                     'updated': firestore.SERVER_TIMESTAMP
+                     })
+            else:
+                project.update(
+                    {'repositories.Github': firestore.ArrayRemove(data['repositories']['Github']),
+                     'updated': firestore.SERVER_TIMESTAMP
+                     })
+
         else:
             return status_code.NOT_FOUND
 
