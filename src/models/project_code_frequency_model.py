@@ -3,8 +3,8 @@ from conn_tool import ConnTool
 
 
 class ProjectCodeFrequencyModel():
-    def __init__(self, id_token):
-        _conn_tool = ConnTool(id_token)
+    def __init__(self):
+        _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
 
@@ -14,7 +14,7 @@ class ProjectCodeFrequencyModel():
         repositories = self.__get_repositories(project)
 
         requester = GithubApiRequester(token)
-        code_freqies= []
+        code_freqies = []
         for repository in repositories:
             # 用url拿到rp
             rp = requester.get_rp_by_rul(repository['url'])
@@ -41,7 +41,8 @@ class ProjectCodeFrequencyModel():
         return date_code
 
     def __get_project(self, name):
-        project = self.__get_unique(self._db.collection(u'projects').where(u'name', u'==', name)).to_dict()
+        project = self.__get_unique(self._db.collection(
+            u'projects').where(u'name', u'==', name)).to_dict()
         return project
 
     def __get_repositories(self, project):
@@ -49,14 +50,14 @@ class ProjectCodeFrequencyModel():
         rids = map(int, project[u'repositories'])
         try:
             for rid in rids:
-                repository = self.__get_unique(self._db.collection(u'repositories').where(u'rid', u'==', rid))
+                repository = self.__get_unique(self._db.collection(
+                    u'repositories').where(u'rid', u'==', rid))
                 repository = repository.to_dict()
                 print('repository:', repository)
                 repositories.append(repository)
-        except :
-                print("get repository occur error.")
+        except:
+            print("get repository occur error.")
         return repositories
 
     def __get_unique(self, collection):
         return next(collection.stream())
-

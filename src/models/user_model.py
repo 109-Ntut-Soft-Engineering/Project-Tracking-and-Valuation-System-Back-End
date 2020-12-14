@@ -5,33 +5,34 @@ from common.status_code import is_client_error
 from common.util import is_iter_empty
 import requests
 import json
+from conn_tool import ConnTool
 
 
 class UserModel():
-    def __init__(self, id_token):
-        _conn_tool = ConnTool(id_token)
+    def __init__(self):
+        _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
 
-    def get_user_information(self):
-        users = self._db.collection(u'users').where(
-            u'uid', u'==', self._uid).stream()
-        is_empty, users = is_iter_empty(users)
-        if is_empty:
-            return error_code.NO_SUCH_ELEMENT
-        users = self._db.collection(u'users').where(
-            u'uid', u'==', self._uid).stream()
-        return {'user': user.to_dict() for user in users}
+    def get_user_information(self, uid=None):
+        if uid is None:
+            users = self._db.collection(u'users').stream()
+            return {'users': user.to_dict() for user in users}
+        else:
+            user = self._db.collection('users').document(uid)
+            return user.to_dict()
+
+    def get_user_githubToken(self):
+        info = self._db.collection('users').document(self._uid).get().to_dict()
+        if 'Github' in info:
+            return info['Github']
+        else:
+            return None
 
     def add_user(self, name, email):
-        if self.__is_uid_exist(self._uid) or self.__is_email_exist(self._uid):
-            return status_code.BAD_REQUEST
 
-        user = User(uid=self._uid, name=name, email=email)
-
-        self._db.collection(u'users').document().set(user.to_dict())
-
-        return status_code.OK
+        user = User(name=name, email=email)
+        self._db.collection(u'users').document(self._uid).set(user.to_dict())
 
     def set_user_token(self, code):
         parameters = {
@@ -48,17 +49,9 @@ class UserModel():
         resp = json.loads(r.text)
 
         if "access_token" in resp:
-            print(resp["access_token"])
+            # print(resp["access_token"])
+            user = self._db.collection('users').document(self._uid)
+            user.update({'Github': resp["access_token"]})
             return 'Get access token success !', status_code.OK
         else:
             return resp["error_description"], status_code.BAD_REQUEST
-
-    def __is_uid_exist(self, uid):
-        users = self._db.collection(u'users').where(
-            u'uid', u'==', self._uid).stream()
-        return not is_iter_empty(users)[0]
-
-    def __is_email_exist(self, email):
-        users = self._db.collection(u'users').where(
-            u'email', u'==', email).stream()
-        return not is_iter_empty(users)[0]

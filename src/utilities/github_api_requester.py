@@ -10,9 +10,10 @@ class GithubApiRequester(Requester):
         self.git = Github(token)
 
     def search(self, name):
-         return self.get_rp_by_name(name)
+        return self.get_rp_by_id(name)
 
     def get_rp_info(self, rp):
+
         rp_info = {}
         rp_info["name"] = rp.name
 
@@ -26,20 +27,23 @@ class GithubApiRequester(Requester):
         rp_info['commits'] = self.get_commits(rp)
         return rp_info
 
+    def get_repoList(self):
+        return GithubObjectParser.parser_repo_list(self.git.get_user().get_repos())
+
     def get_user(self) -> AuthenticatedUser:
         return self.git.get_user()
 
-    def get_rp_by_name(self, name: str) -> Repository:
+    def get_rp_by_id(self, id: str) -> Repository:
         try:
-            return self.git.get_repo(name)
+            return self.git.get_repo(id)
         except Exception:
-            print("Can't find {} from github".format(name))
+            print("Can't find {} from github".format(id))
             return None
 
     def get_rp_by_rul(self, url: str) -> Repository:
         try:
             name = self.__parse_url(url)
-            return self.get_rp_by_name(name)
+            return self.get_rp_by_id(name)
         except Exception as e:
             print("e")
             return None
@@ -64,17 +68,20 @@ class GithubApiRequester(Requester):
             name = url.replace('https://github.com/', "")
             return name
 
+
 if __name__ == '__main__':
     import json
     user = "s88037zz@gmail.com"
-    password ='asd87306128'
-    token = ' ef4164107b7e4e2505abd8fced70951f44e51964'
+    password = 'asd87306128'
+    token = '445d5e39b2d3f4abc9c0063fe3ff1f689470c3c5'
     requester = GithubApiRequester(token)
-    user = requester.get_user()
-    print(user.name)
+    # repos = requester.get_repoList()
+    # print(repos)
 
-    rp = requester.get_rp_by_name("Gougon-Side-Project/Android-DodoCagePhonograph")
-    rp_info = requester.get_rp_info(rp)
-    print(json.dumps(rp_info, indent=1))
+    # rp = requester.get_rp_by_name(
+    #     "wei02427/DatabaseFrontend")
+    # print(rp)
+    # rp_info = requester.get_rp_info(rp)
+    # print(json.dumps(rp_info, indent=1))
 
-
+    print(GithubObjectParser.parser_repo_list(requester.get_repoList()))
