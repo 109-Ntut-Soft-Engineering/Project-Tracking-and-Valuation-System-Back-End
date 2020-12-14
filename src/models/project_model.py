@@ -17,6 +17,7 @@ class ProjectModel():
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
+        self._userModel = UserModel()
 
     def get_projects_list(self):
         projects = self._db.collection('projects').where(
@@ -28,6 +29,24 @@ class ProjectModel():
             projList.append(projDic)
 
         return {'projects': projList}
+
+    def get_avail_repos(self, pid):
+        token = self._userModel.get_user_githubToken()
+        if token != None:
+            requester = GithubApiRequester(token)
+            existRepos = self._db.collection(
+                'projects').document(pid).get().to_dict()
+            userRepos = requester.get_repoList()['repos']
+            info = {'repos': []}
+            for repo in userRepos:
+
+                if str(repo['id']) not in existRepos['repositories']['Github']:
+                    info['repos'].append(repo)
+            return jsonify(info)
+        else:
+            return {
+                'message': '尚未連結Github'
+            }, status_code.NOT_FOUND
 
     def get_project_repos(self, pid):
         repos = self._db.collection('projects').document(pid).get().to_dict()
