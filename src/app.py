@@ -19,26 +19,20 @@ CORS(app)
 
 
 api.add_resource(UserResource, '/user')
+api.add_resource(AuthResource, '/user/auth')
+api.add_resource(RepositoryResource, '/user/AvailRepository/<string:pid>')
+
 api.add_resource(ProjectsResource, '/project')
 api.add_resource(ProjectReposResource, '/project/<string:pid>/repos')
 api.add_resource(ProjectSettingResource, '/project/<string:pid>/setting')
-api.add_resource(ProjectCommitResource, '/project/<string:name>/commit')
-api.add_resource(AuthResource, '/user/auth')
 
 api.add_resource(RepositoryResource, '/repository', endpoint='repositories')
 
 
-# for code frequency
-api.add_resource(ProjectCodeFrequencyResource,
-                 '/project/code_freq/<string:name>')
-#api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
-#api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
-api.add_resource(RepositoryResource, '/user/AvailRepository/<string:pid>')
+# for project information
+api.add_resource(ProjectCodeFrequencyResource, '/project/<string:name>/code_freq')
+api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
 
-
-# for code frequency
-# api.add_resource(ProjectCodeFrequencyResource,
-#                  '/project/code_freq/<string: project>')
 
 if __name__ == "__main__":
     app.run()

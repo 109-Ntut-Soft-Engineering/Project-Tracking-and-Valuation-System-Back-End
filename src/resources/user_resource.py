@@ -11,10 +11,8 @@ class UserResource(Resource):
         self._model = UserModel()
 
     def get(self):
-        data = self._model.get_user_information()
-        if data == error_code.NO_SUCH_ELEMENT:
-            abort(404)
-        return jsonify(data)
+        data, code = self._model.get_user_information()
+        return data, code
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -23,8 +21,6 @@ class UserResource(Resource):
         args = parser.parse_args()
         print(args['name'], args['email'])
         msg, code = self._model.add_user(args['name'], args['email'])
-        # if is_client_error(code):
-        #     abort(code)
         return {
             'message': msg
         }, code

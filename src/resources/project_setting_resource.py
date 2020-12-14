@@ -11,14 +11,12 @@ class ProjectSettingResource(Resource):
         self._model = ProjectModel()
 
     def get(self, pid):
-        print(pid, file=sys.stderr)
-        return self._model.get_project_setting(pid)
+        data, code = self._model.get_project_setting(pid)
+        return data, code
 
     def delete(self, pid):
-        message = self._model.delete_project(pid)
-        if is_client_error(message):
-            abort(message)
-        return message
+        data, code = self._model.delete_project(pid)
+        return data, code
 
     def patch(self, pid):
         parser = reqparse.RequestParser()
@@ -27,9 +25,6 @@ class ProjectSettingResource(Resource):
 
         args = parser.parse_args()
         
-        message = self._model.update_project(
+        data, code = self._model.update_project(
             pid, args['name'], args['collaborator'])
-
-        if is_client_error(message):
-            return message
-        return message
+        return data, code
