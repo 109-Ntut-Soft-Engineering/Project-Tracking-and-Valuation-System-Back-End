@@ -26,7 +26,7 @@ class Project():
             'owner': self.owner,
             'collaborator': self.collaborator, 
             'repositories': self.repositories,
-            'updated': self.updated
+            'updated': self.updated.to_dict()
         }
 
         # if self.pid:

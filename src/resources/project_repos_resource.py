@@ -10,7 +10,8 @@ class ProjectReposResource(Resource):
         self._model = ProjectModel()
 
     def get(self, pid):
-        return self._model.get_project_repos(pid)
+        data, code = self._model.get_project_repos(pid)
+        return data, code
 
     def patch(self, pid):
         parser = reqparse.RequestParser()
@@ -26,7 +27,5 @@ class ProjectReposResource(Resource):
                 'action', required=True,  location=('repositories',))
             args['repositories'] = repos_parser.parse_args(req=args)
 
-        message = self._model.update_repos(pid, args)
-        if is_client_error(message):
-            return message
-        return message
+        data, code = self._model.update_repos(pid, args)
+        return data, code
