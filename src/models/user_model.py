@@ -30,7 +30,6 @@ class UserModel():
             return None
 
     def add_user(self, name, email):
-
         user = User(name=name, email=email)
         self._db.collection(u'users').document(self._uid).set(user.to_dict())
 

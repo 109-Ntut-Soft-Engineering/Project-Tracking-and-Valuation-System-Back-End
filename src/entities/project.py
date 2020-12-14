@@ -1,14 +1,14 @@
 class Project():
-    def __init__(self, name, owner, repositories=None):
-
+    def __init__(self, name, owner, collaborator=[], repositories=None):
         self.name = name
         self.owner = owner
+        self.collaborator = collaborator
         self.repositories = repositories
 
     @staticmethod
     def from_dict(source):
         project = Project(
-            source[u'name'], source[u'owner'], source[u'repositories'])
+            source[u'name'], source[u'owner'], source[u'collaborator'], source[u'repositories'])
 
         # if u'name' in source:
         #     project.name = source[u'name']
@@ -23,6 +23,7 @@ class Project():
         dest = {
             'name': self.name,
             'owner': self.owner,
+            'collaborator': self.collaborator, 
             'repositories': self.repositories
         }
 
@@ -42,6 +43,7 @@ class Project():
             f'project(\
                 name={self.name}, \
                 owner={self.owner}, \
+                collaborator={self.collaborator}, \
                 repositories={self.repositories}\
             )'
         )

@@ -6,12 +6,13 @@ from common.status_code import is_client_error
 import sys
 
 
-class ProjectResource(Resource):
+class ProjectSettingResource(Resource):
     def __init__(self):
         self._model = ProjectModel()
 
     def get(self, pid):
-        return self._model.get_project_repos(pid)
+        print(pid, file=sys.stderr)
+        return self._model.get_project_setting(pid)
 
     def delete(self, pid):
         message = self._model.delete_project(pid)
@@ -22,17 +23,12 @@ class ProjectResource(Resource):
     def patch(self, pid):
         parser = reqparse.RequestParser()
         parser.add_argument('collaborator', action='append', required=False)
-        parser.add_argument('repositories', type=dict, required=False)
         parser.add_argument('name', action='append', required=False)
 
         args = parser.parse_args()
-
-        repos_parser = reqparse.RequestParser()
-        repos_parser.add_argument(
-            'Github', action='append', location=('repositories',))
-        repos_args = repos_parser.parse_args(req=args)
+        
         message = self._model.update_project(
-            pid, args['collaborator'], repos_args['Github'], args['name'])
+            pid, args['name'], args['collaborator'])
         if is_client_error(message):
             return message
         return message
