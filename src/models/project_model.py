@@ -28,7 +28,6 @@ class ProjectModel():
         proj_list = []
         self.__build_project_list(proj_list, proj_owner)
         self.__build_project_list(proj_list, proj_collab)
-        # print(proj_list, file=sys.stderr)
         return {'projects': proj_list}, status_code.OK
 
     def __build_project_list(self, proj_list, projects):
@@ -77,10 +76,25 @@ class ProjectModel():
             return setting.to_dict(), status_code.OK
         return None, status_code.NOT_FOUND
 
-    def add_project(self, name, owner):
-        project = Project(name=name, owner=self._uid)
-        self._db.collection('projects').document().set(project.to_dict())
+    def add_project(self, name):
+        if self.__is_project_name_used(name):
+             return None, status_code.BAD_REQUEST
+        
+        project = Project(name=name, owner=self._uid, updated=firestore.SERVER_TIMESTAMP)
+        project_dict = {
+            'name': project.name,
+            'owner': project.owner,
+            'collaborator': project.collaborator,
+            'repositories': project.repositories,
+            'updated': project.updated
+        }
+
+        self._db.collection('projects').document().set(project_dict)
         return None, status_code.OK
+
+    def __is_project_name_used(self, name):
+        projects = self._db.collection('projects').where('name', '==', name).get()
+        return len(projects) != 0
 
     def delete_project(self, pid):
         project = self._db.collection(u'projects').document(pid)
