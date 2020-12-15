@@ -28,12 +28,12 @@ class ProjectModel():
         proj_list = []
         self.__build_project_list(proj_list, proj_owner)
         self.__build_project_list(proj_list, proj_collab)
-        print(proj_list, file=sys.stderr)
         return {'projects': proj_list}, status_code.OK
 
     def __build_project_list(self, proj_list, projects):
         for project in projects:
-            proj_dic = project.to_dict()
+
+            proj_dic = Project.from_dict(project.to_dict()).to_dict()
             proj_dic.update({'id': project.id})
             proj_list.append(proj_dic)
 
@@ -46,7 +46,6 @@ class ProjectModel():
             userRepos = requester.get_user_repoList()['repos']
             info = {'repos': []}
             for repo in userRepos:
-
                 if repo['id'] not in existRepos['repositories']['Github']:
                     info['repos'].append(repo)
             return jsonify(info)
@@ -78,9 +77,24 @@ class ProjectModel():
         return None, status_code.NOT_FOUND
 
     def add_project(self, name):
-        project = Project(name=name, owner=self._uid)
-        self._db.collection('projects').document().set(project.to_dict())
+        if self.__is_project_name_used(name):
+             return None, status_code.BAD_REQUEST
+        
+        project = Project(name=name, owner=self._uid, updated=firestore.SERVER_TIMESTAMP)
+        project_dict = {
+            'name': project.name,
+            'owner': project.owner,
+            'collaborator': project.collaborator,
+            'repositories': project.repositories,
+            'updated': project.updated
+        }
+
+        self._db.collection('projects').document().set(project_dict)
         return None, status_code.OK
+
+    def __is_project_name_used(self, name):
+        projects = self._db.collection('projects').where('name', '==', name).get()
+        return len(projects) != 0
 
     def delete_project(self, pid):
         project = self._db.collection(u'projects').document(pid)
