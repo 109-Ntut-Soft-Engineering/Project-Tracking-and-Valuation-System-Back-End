@@ -1,5 +1,6 @@
 from conn_tool import ConnTool
 from entities.project import Project
+from entities.setting import Setting
 from common import status_code, error_code
 from common.status_code import is_client_error
 from common.util import is_iter_empty
@@ -17,16 +18,41 @@ class ProjectModel():
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
+        self._userModel = UserModel()
 
-    def get_projects_list(self):
-        projects = self._db.collection('projects').where(
+    def get_project_list(self):
+        proj_owner = self._db.collection('projects').where(
             'owner', '==', self._uid).get()
-        projList = []
+        proj_collab = self._db.collection('projects').where(
+            'collaborator', 'array_contains', self._uid).get()
+        proj_list = []
+        self.__build_project_list(proj_list, proj_owner)
+        self.__build_project_list(proj_list, proj_collab)
+        return {'projects': proj_list}, status_code.OK
+
+    def __build_project_list(self, proj_list, projects):
         for project in projects:
-            projDic = project.to_dict()
-            projDic.update({'id': project.id})
-            projList.append(projDic)
-        return {'projects': projList}
+
+            proj_dic = Project.from_dict(project.to_dict()).to_dict()
+            proj_dic.update({'id': project.id})
+            proj_list.append(proj_dic)
+
+    def get_avail_repos(self, pid):
+        token = self._userModel.get_user_githubToken()
+        if token != None:
+            requester = GithubApiRequester(token)
+            existRepos = self._db.collection(
+                'projects').document(pid).get().to_dict()
+            userRepos = requester.get_user_repoList()['repos']
+            info = {'repos': []}
+            for repo in userRepos:
+                if repo['id'] not in existRepos['repositories']['Github']:
+                    info['repos'].append(repo)
+            return jsonify(info)
+        else:
+            return {
+                'message': '尚未連結Github'
+            }, status_code.NOT_FOUND
 
     def get_project_repos(self, pid):
         repos = self._db.collection('projects').document(pid).get().to_dict()
@@ -34,93 +60,75 @@ class ProjectModel():
         info = {'repos': []}
         if token != None:
             requester = GithubApiRequester(token)
-            for repo in requester.get_repoList()['repos']:
-                if repo['id'].split()[1] in repos['repositories']['Github']:
+            for repo in requester.get_user_repoList()['repos']:
+                if repo['id'] in repos['repositories']['Github']:
                     info['repos'].append(repo)
-            return jsonify(info)
+            return info, status_code.OK
         else:
-            status_code.NOT_FOUND
+            None, status_code.NOT_FOUND
 
-    def add_project(self, name, owner):
-        if self.__is_project_name_exist(name):
-            return status_code.BAD_REQUEST
+    def get_project_setting(self, pid):
+        project = self._db.collection('projects').document(pid).get()
+        if project.exists:
+            proj_dic = project.to_dict()
+            setting = Setting(
+                proj_dic['name'], proj_dic['owner'], proj_dic['collaborator'])
+            return setting.to_dict(), status_code.OK
+        return None, status_code.NOT_FOUND
 
-        project = Project(name=name, owner=self._uid)
+    def add_project(self, name):
+        if self.__is_project_name_used(name):
+             return None, status_code.BAD_REQUEST
+        
+        project = Project(name=name, owner=self._uid, updated=firestore.SERVER_TIMESTAMP)
+        project_dict = {
+            'name': project.name,
+            'owner': project.owner,
+            'collaborator': project.collaborator,
+            'repositories': project.repositories,
+            'updated': project.updated
+        }
 
-        self._db.collection('projects').document().set(project.to_dict())
+        self._db.collection('projects').document().set(project_dict)
+        return None, status_code.OK
 
-        return status_code.OK
+    def __is_project_name_used(self, name):
+        projects = self._db.collection('projects').where('name', '==', name).get()
+        return len(projects) != 0
 
-    def __is_project_name_exist(self, name):
-        projects = self.db.collection(u'projects').where(
-            u'name', u'==', name).stream()
-        return not is_iter_empty(projects)[0]
+    def delete_project(self, pid):
+        project = self._db.collection(u'projects').document(pid)
+        if not project.get().exists:
+            return None, status_code.NOT_FOUND
+        project.delete()
+        return None, status_code.OK
 
-    def delete_project(self, name):
-        if not self.__is_project_name_exist(name):
-            return status_code.NOT_FOUND
-
-        projects = self._db.collection(u'projects').where(
-            u'name', u'==', name).stream()
-        for project in projects:
-            project.reference.delete()
-        return status_code.OK
-
-    def update_project(self, pid, collaborator,  repositories, name):
+    def update_repos(self, pid, data):
         project = self._db.collection('projects').document(pid)
 
-        print(repositories)
+        print(data)
+
         if project.get().exists:
-            project.update({'repositories.Github': repositories})
+            if data['repositories']['action'] == 'update':
+                project.update(
+                    {'repositories.Github': firestore.ArrayUnion(data['repositories']['Github']),
+                     'updated': firestore.SERVER_TIMESTAMP
+                     })
+            else:
+                project.update(
+                    {'repositories.Github': firestore.ArrayRemove(data['repositories']['Github']),
+                     'updated': firestore.SERVER_TIMESTAMP
+                     })
+            return None, status_code.OK
         else:
-            return status_code.NOT_FOUND
-        # if not self.__is_project_name_exist(name):
-        #     return status_code.NOT_FOUND
+            return None, status_code.NOT_FOUND
 
-        # project = self.__get_unique(self._db.collection(
-        #     u'projects').where(u'name', u'==', name))
-        # project_dict = self.__init_project(project)
+    def update_setting(self, pid, name, collaborator):
+        project = self._db.collection('projects').document(pid)
 
-        # update_data = {}
-        # code = self.__set_update_data(
-        #     project_dict, owner, update_data, 'owner')
-        # if is_client_error(code):
-        #     return code
-        # code = self.__set_update_data(
-        #     project_dict, repositories, update_data, 'repositories')
-        # if is_client_error(code):
-        #     return code
-
-        # if len(update_data) == 0:
-        #     return status_code.BAD_REQUEST
-
-        # project.reference.set(update_data, merge=True)
-        # return status_code.OK
-
-    def __init_project(self, project):
-        project_dict = project.to_dict()
-        if project_dict['owner'] is None:
-            project_dict['owner'] = []
-        if project_dict['repositories'] is None:
-            project_dict['repositories'] = []
-        return project_dict
-
-    def __set_update_data(self, origin, update, update_data, field_name):
-        code = self.__validate_update_array(origin, update, field_name)
-        if code == status_code.OK:
-            update_data[field_name] = list(
-                set(update) | set(origin[field_name]))
-        elif is_client_error(code):
-            return code
-        return status_code.OK
-
-    def __validate_update_array(self, origin, update, field_name):
-        if update is None:
-            return error_code.NO_SUCH_ELEMENT
-        if len(set(origin) & set(update)) == 0:
-            return status_code.OK
+        if project.get().exists:
+            project.update({'collaborator': collaborator})
+            project.update({'name': name})
+            return None, status_code.OK
         else:
-            return status_code.BAD_REQUEST
-
-    def __get_unique(self, collection):
-        return next(collection.stream())
+            return None, status_code.NOT_FOUND

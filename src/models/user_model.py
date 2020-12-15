@@ -5,6 +5,7 @@ from common.status_code import is_client_error
 from common.util import is_iter_empty
 import requests
 import json
+import sys
 from conn_tool import ConnTool
 
 
@@ -14,13 +15,12 @@ class UserModel():
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
 
-    def get_user_information(self, uid=None):
-        if uid is None:
-            users = self._db.collection(u'users').stream()
-            return {'users': user.to_dict() for user in users}
-        else:
-            user = self._db.collection('users').document(uid)
-            return user.to_dict()
+    def get_user_information(self):
+        user = self._db.collection('users').document(self._uid).get()
+        print(user.to_dict(), file=sys.stderr)
+        if user.exists:
+            return user.to_dict(), status_code.OK
+        return None, status_code.NOT_FOUND
 
     def get_user_githubToken(self):
         info = self._db.collection('users').document(self._uid).get().to_dict()
@@ -30,9 +30,14 @@ class UserModel():
             return None
 
     def add_user(self, name, email):
-
+        if self.__is_email_used(email):
+            return None, status_code.BAD_REQUEST
         user = User(name=name, email=email)
         self._db.collection(u'users').document(self._uid).set(user.to_dict())
+        return None, status_code.OK
+
+    def __is_email_used(self, email):
+        return self._db.collection('users').where('email', '==', email).get() != None
 
     def set_user_token(self, code):
         parameters = {

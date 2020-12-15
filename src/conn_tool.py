@@ -29,10 +29,7 @@ class ConnTool():
         else:
             abort(401)
 
-        # if idToken == 'test_token':
-        #     self._uid = '123'
-        # else:
-        #     self._uid = verify_Idtiken(idToken)
+        # self._uid = '3pCC26BCjFVW5l39bnepCa21gjs1'
 
     @property
     def db(self):

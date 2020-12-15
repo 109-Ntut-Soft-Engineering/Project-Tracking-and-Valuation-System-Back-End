@@ -9,19 +9,13 @@ class ProjectsResource(Resource):
         self._model = ProjectModel()
 
     def get(self):
-        data = self._model.get_projects_list()
-        if is_client_error(data):
-            abort(data)
-        return jsonify(data)
+        data, code = self._model.get_project_list()
+        return data, code
 
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', required=True, help='name is required.')
-        parser.add_argument('owner', action='append',
-                            required=True, help='owner is required.')
         args = parser.parse_args()
 
-        message = self._model.add_project(args['name'], args['owner'])
-        if is_client_error(message):
-            abort(message)
-        return message
+        data, code = self._model.add_project(args['name'])
+        return data, code

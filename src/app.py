@@ -9,7 +9,8 @@ from flask_cors import CORS
 import config
 from resources.user_resource import UserResource
 from resources.projects_resource import ProjectsResource
-from resources.project_resource import ProjectResource
+from resources.project_repos_resource import ProjectReposResource
+from resources.project_setting_resource import ProjectSettingResource
 
 app = Flask("soft engineering")
 app.config.from_object(config)
@@ -18,25 +19,19 @@ CORS(app)
 
 
 api.add_resource(UserResource, '/user')
-api.add_resource(ProjectsResource, '/project')
-api.add_resource(ProjectResource, '/project/<string:pid>')
-api.add_resource(ProjectCommitResource, '/project/<string:name>/commit')
+api.add_resource(ProjectsResource, '/projects')
 api.add_resource(AuthResource, '/user/auth')
 
-api.add_resource(RepositoryResource, '/repository', endpoint='repositories')
 
+api.add_resource(ProjectReposResource, '/project/<string:pid>/repos')
+api.add_resource(ProjectSettingResource, '/project/<string:pid>/setting')
+api.add_resource(RepositoryResource, '/project/AvailRepository/<string:pid>')
 
-# for code frequency
+# for project information
 api.add_resource(ProjectCodeFrequencyResource,
-                 '/project/code_freq/<string:name>')
-#api.add_resource(GitRepositoryResource, '/repository', endpoint='repositories')
-#api.add_resource(GitRepositoryResource, '/repository/<string:pid>/<string:name>', endpoint='repository')
-api.add_resource(RepositoryResource, '/repository/<string:source>')
+                 '/project/<string:name>/code_freq')
+api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
 
-
-# for code frequency
-# api.add_resource(ProjectCodeFrequencyResource,
-#                  '/project/code_freq/<string: project>')
 
 if __name__ == "__main__":
     app.run()
