@@ -77,7 +77,7 @@ class ProjectModel():
             return setting.to_dict(), status_code.OK
         return None, status_code.NOT_FOUND
 
-    def add_project(self, name, owner):
+    def add_project(self, name):
         project = Project(name=name, owner=self._uid)
         self._db.collection('projects').document().set(project.to_dict())
         return None, status_code.OK

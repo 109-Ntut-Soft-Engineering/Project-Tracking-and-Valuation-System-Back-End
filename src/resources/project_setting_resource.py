@@ -25,6 +25,6 @@ class ProjectSettingResource(Resource):
 
         args = parser.parse_args()
 
-        data, code = self._model.update_project(
+        data, code = self._model.update_setting(
             pid, args['name'], args['collaborator'])
         return data, code
