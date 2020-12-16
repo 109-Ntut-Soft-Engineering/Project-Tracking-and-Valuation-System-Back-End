@@ -22,8 +22,6 @@ class ProjectCommitModel():
         repositories = project['repositories']['Github']
         print(repositories, file=sys.stderr)
 
-        user = "s88037zz@gmail.com"
-        password = 'asd87306128'
         token = ' ef4164107b7e4e2505abd8fced70951f44e51964'
         requester = GithubApiRequester(token)
 
