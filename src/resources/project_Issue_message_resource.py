@@ -11,4 +11,4 @@ class ProjectIssueMessageResource(Resource):
 
     def get(self, name):
         print('name', name)
-        return {"issue": self._model.get_issues(name, self._test_token)}, status_code.OK
+        return {"issues": self._model.get_issues(name, self._test_token)}, status_code.OK

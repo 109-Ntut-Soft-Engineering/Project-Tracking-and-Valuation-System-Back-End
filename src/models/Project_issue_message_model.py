@@ -9,44 +9,41 @@ class ProjectIssueMessageModel():
         self._uid = _conn_tool.uid
 
     def get_issues(self, name, token):
-        '''
         project = self.__get_project(name)
-        repositories = self.__get_repositories(project)
+        urls = self.__get_repositories_urls(project)
 
-        requester = GithubApiRequester(token)
+        requester = GithubApiRequester('ef4164107b7e4e2505abd8fced70951f44e51964')
         issues = []
-        for repository in repositories:
+        for url in urls:
             # 用url拿到rp
-            rp = requester.get_rp_by_rul('https://github.com/Gougon-Side-Project/Android-DodoCagePhonograph')
+            repo = {}
+            print('url', url)
+            rp = requester.get_rp_by_rul(url)
+            repo['name'] = rp.name
             if rp is None:
                 pass
             else:
                 # get_stats_code_frequency 可以換成你要的
                 # 先不要用get_rp_info 他會撈code_freq, issues, commits會有點久
                 issue = requester.get_issues(rp)
-                issues.append(issue)
-        '''
-        requester = GithubApiRequester('ef4164107b7e4e2505abd8fced70951f44e51964')
-        rp = requester.get_rp_by_rul('https://github.com/Gougon-Side-Project/Android-DodoCagePhonograph')
-        issue = requester.get_issues(rp)
-        return issue
+                repo['issue'] = issue
+            issues.append(repo)
+        return issues
 
     def __get_project(self, name):
         project = self.__get_unique(self._db.collection(u'projects').where(u'name', u'==', name)).to_dict()
         return project
 
-    def __get_repositories(self, project):
-        repositories = []
-        rids = map(int, project[u'repositories'])
+    def __get_repositories_urls(self, project):
+        urls = []
+        sources = project[u'repositories']
         try:
-            for rid in rids:
-                repository = self.__get_unique(self._db.collection(u'repositories').where(u'rid', u'==', rid))
-                repository = repository.to_dict()
-                print('repository:', repository)
-                repositories.append(repository)
+            for source_key in sources.keys():
+                for url in sources[source_key]:
+                    urls.append(url)
         except :
                 print("get repository occur error.")
-        return repositories
+        return urls
 
     def __get_unique(self, collection):
         return next(collection.stream())
