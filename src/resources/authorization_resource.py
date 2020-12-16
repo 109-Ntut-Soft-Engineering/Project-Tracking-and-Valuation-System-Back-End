@@ -12,8 +12,6 @@ class AuthResource(Resource):
         self._model = UserModel()
 
     def post(self):
-
-        # print(self._Idtoken)
         parser = reqparse.RequestParser()
         parser.add_argument('code', required=True, help='code is required')
         args = parser.parse_args()

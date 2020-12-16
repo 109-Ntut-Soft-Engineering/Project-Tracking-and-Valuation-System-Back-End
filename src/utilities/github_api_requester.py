@@ -60,8 +60,11 @@ class GithubApiRequester(Requester):
         return GithubObjectParser.parser_issues(issues)
 
     def get_code_freq(self, rp) -> list:
-        stats_code_frequency = rp.get_stats_code_frequency()
-        return GithubObjectParser.parser_stats_code_frequencies(stats_code_frequency)
+        try:
+            stats_code_frequency = rp.get_stats_code_frequency()
+            return GithubObjectParser.parser_stats_code_frequencies(stats_code_frequency)
+        except Exception:
+            return []
 
     def get_commits(self, rp):
         commits = rp.get_commits()
@@ -77,10 +80,13 @@ class GithubApiRequester(Requester):
 
 
 if __name__ == '__main__':
-    import json
-    user = "s88037zz@gmail.com"
-    password = 'asd87306128'
-    token = '9cef1886c6974e6d20323cdbdace6c5da9377d2c'
-    requester = GithubApiRequester(token)
 
-    print(requester.get_user_starredList().totalCount)
+    token = 'ef4164107b7e4e2505abd8fced70951f44e51964'
+    requester = GithubApiRequester(token)
+    repos = requester.get_user_repoList()
+    test = [14370955, 26850443, 174338973, 190362061, 252783691, 230699883,
+            228809694, 252802099, 192848615, 228999991, 56061447]
+    for id in test:
+        repo = requester.get_rp_by_id(id)
+        print('id:', id, "repo", repo)
+

@@ -6,9 +6,8 @@ from common import status_code
 
 class ProjectCodeFrequencyResource(Resource):
     def __init__(self):
-        self._test_token = 'ef4164107b7e4e2505abd8fced70951f44e51964'
-        self._model = ProjectCodeFrequencyModel(self._test_token)
+        self._model = ProjectCodeFrequencyModel()
 
-    def get(self, name):
-        print('name', name)
-        return {"code_freq": self._model.get_code_freq(name, self._test_token)}, status_code.OK
+    def get(self, pid):
+        print('pid', pid)
+        return {"code_freq": self._model.get_code_freq(pid)}, status_code.OK
