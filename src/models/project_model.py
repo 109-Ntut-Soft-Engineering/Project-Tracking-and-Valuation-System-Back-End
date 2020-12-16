@@ -71,16 +71,16 @@ class ProjectModel():
         project = self._db.collection('projects').document(pid).get()
         if project.exists:
             proj_dic = project.to_dict()
-            setting = Setting(
-                proj_dic['name'], proj_dic['owner'], proj_dic['collaborator'])
+            setting = Setting(proj_dic['name'], proj_dic['collaborator'])
             return setting.to_dict(), status_code.OK
         return None, status_code.NOT_FOUND
 
     def add_project(self, name):
         if self.__is_project_name_used(name):
-             return None, status_code.BAD_REQUEST
-        
-        project = Project(name=name, owner=self._uid, updated=firestore.SERVER_TIMESTAMP)
+            return None, status_code.BAD_REQUEST
+
+        project = Project(name=name, owner=self._uid,
+                          updated=firestore.SERVER_TIMESTAMP)
         project_dict = {
             'name': project.name,
             'owner': project.owner,
@@ -93,7 +93,8 @@ class ProjectModel():
         return None, status_code.OK
 
     def __is_project_name_used(self, name):
-        projects = self._db.collection('projects').where('name', '==', name).get()
+        projects = self._db.collection(
+            'projects').where('name', '==', name).get()
         return len(projects) != 0
 
     def delete_project(self, pid):
@@ -109,26 +110,67 @@ class ProjectModel():
         print(data)
 
         if project.get().exists:
-            if data['repositories']['action'] == 'update':
+            action = data['repositories']['action']
+            if action == 'update':
                 project.update(
                     {'repositories.Github': firestore.ArrayUnion(data['repositories']['Github']),
                      'updated': firestore.SERVER_TIMESTAMP
                      })
-            else:
+            elif action == 'remove':
                 project.update(
                     {'repositories.Github': firestore.ArrayRemove(data['repositories']['Github']),
                      'updated': firestore.SERVER_TIMESTAMP
                      })
+            else:
+                return 'missing action', status_code.BAD_REQUEST
             return None, status_code.OK
         else:
             return None, status_code.NOT_FOUND
 
-    def update_setting(self, pid, name, collaborator):
+    def update_collaborator(self, pid, collaborator, action):
         project = self._db.collection('projects').document(pid)
+        info, code = None, None
 
         if project.get().exists:
-            project.update({'collaborator': collaborator})
-            project.update({'name': name})
-            return None, status_code.OK
+
+            if action == 'add':
+                info, code = self._userModel.get_user_info_by_email(
+                    collaborator)
+                if code == status_code.NOT_FOUND:
+                    return info, code
+                elif info['uid'] in project.get().to_dict()['collaborator']:
+                    return {'msg': '協作者已存在！'}, status_code.BAD_REQUEST
+
+                else:
+                    project.update(
+                        {'collaborator': firestore.ArrayUnion([info['uid']]),
+                         'updated': firestore.SERVER_TIMESTAMP
+                         })
+                return info, status_code.OK
+            elif action == 'remove':
+                project.update(
+                    {'collaborator': firestore.ArrayRemove([collaborator]),
+                     'updated': firestore.SERVER_TIMESTAMP
+                     })
+                return {'msg': '移除成功！'}, status_code.OK
+            else:
+                return {'msg': 'miss action'}, status_code.BAD_REQUEST
+
+        else:
+            return {'msg': 'Project Not Found'}, code
+
+    def update_name(self, pid, name):
+        project = self._db.collection('projects').document(pid)
+        if project.get().exists:
+
+            if name != '':
+                project.update(
+                    {'name': name,
+                     'updated': firestore.SERVER_TIMESTAMP
+                     })
+                return None, status_code.OK
+            else:
+                return 'name is require', status_code.BAD_REQUEST
+
         else:
             return None, status_code.NOT_FOUND

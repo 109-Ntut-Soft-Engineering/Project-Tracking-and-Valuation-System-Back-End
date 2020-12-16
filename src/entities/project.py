@@ -1,5 +1,5 @@
 class Project():
-    def __init__(self, name, owner, collaborator=[], repositories=None, updated=None):
+    def __init__(self, name, owner, collaborator=[], repositories={'Github': []}, updated=None):
         self.name = name
         self.owner = owner
         self.collaborator = collaborator

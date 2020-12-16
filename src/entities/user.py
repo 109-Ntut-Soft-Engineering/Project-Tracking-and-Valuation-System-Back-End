@@ -3,16 +3,10 @@ class User():
 
         self.name = name
         self.email = email
-        self.github = None
 
     @staticmethod
     def from_dict(source):
         user = User(source['name'], source['email'])
-
-        if u'name' in source:
-            user.name = source['name']
-        if u'email' in source:
-            user.email = source['email']
 
         return user
 
@@ -20,7 +14,6 @@ class User():
         dest = {
             'name': self.name,
             'email': self.email,
-            'Github': self.github
         }
 
         # if self.name:

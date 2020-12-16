@@ -7,6 +7,7 @@ import requests
 import json
 import sys
 from conn_tool import ConnTool
+from firebase_admin import auth
 
 
 class UserModel():
@@ -15,12 +16,34 @@ class UserModel():
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
 
-    def get_user_information(self):
-        user = self._db.collection('users').document(self._uid).get()
-        print(user.to_dict(), file=sys.stderr)
+    def get_user_info_by_email(self, email):
+
+        try:
+            uid = auth.get_user_by_email(email).uid
+            user = self._db.collection('users').document(uid).get()
+        except:
+            return {'msg': '找不到使用者！'}, status_code.NOT_FOUND
+
         if user.exists:
-            return user.to_dict(), status_code.OK
-        return None, status_code.NOT_FOUND
+            user_dict = User.from_dict(user.to_dict()).to_dict()
+            user_dict.update({'uid': user.id})
+            print(user_dict, file=sys.stderr)
+            return user_dict, status_code.OK
+
+    def get_user_info_by_uid(self, uid=None):
+        if uid == None:
+            user = self._db.collection('users').document(self._uid).get()
+        else:
+            try:
+                auth.get_user(uid)
+                user = self._db.collection('users').document(uid).get()
+            except:
+                return {'msg': '找不到使用者！'}, status_code.NOT_FOUND
+        if user.exists:
+            user_dict = User.from_dict(user.to_dict()).to_dict()
+            user_dict.update({'uid': user.id})
+            print(user_dict, file=sys.stderr)
+            return user_dict, status_code.OK
 
     def get_user_githubToken(self):
         info = self._db.collection('users').document(self._uid).get().to_dict()
@@ -30,14 +53,9 @@ class UserModel():
             return None
 
     def add_user(self, name, email):
-        if self.__is_email_used(email):
-            return None, status_code.BAD_REQUEST
         user = User(name=name, email=email)
         self._db.collection(u'users').document(self._uid).set(user.to_dict())
         return None, status_code.OK
-
-    def __is_email_used(self, email):
-        return self._db.collection('users').where('email', '==', email).get() != None
 
     def set_user_token(self, code):
         parameters = {

@@ -1,14 +1,15 @@
+from models.user_model import UserModel
+
+
 class Setting():
-    def __init__(self, name, owner, collaborator):
+    def __init__(self, name, collaborator):
         self.name = name
-        self.owner = owner
         self.collaborator = collaborator
+        self.__userModel = UserModel()
 
     def to_dict(self):
         dest = {
-            u'name':self.name, 
-            u'owner':self.owner,
-            u'collaborator':self.collaborator
+            'name': self.name,
+            'collaborator': [self.__userModel.get_user_info_by_uid(collab)[0] for collab in self.collaborator]
         }
-
         return dest

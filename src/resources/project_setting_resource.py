@@ -20,11 +20,19 @@ class ProjectSettingResource(Resource):
 
     def patch(self, pid):
         parser = reqparse.RequestParser()
-        parser.add_argument('collaborator', action='append', required=False)
-        parser.add_argument('name', action='append', required=False)
+        parser.add_argument('collaborator', required=False)
+        parser.add_argument('collabAction',  required=False)
+
+        parser.add_argument('name',  required=False)
 
         args = parser.parse_args()
+        data, code = 'wrong args', 404
+        print(args)
+        if args['collaborator'] != None and args['collabAction'] != None:
+            data, code = self._model.update_collaborator(
+                pid, args['collaborator'], args['collabAction'])
+        elif args['name'] != None:
+            data, code = self._model.update_name(
+                pid, args['name'])
 
-        data, code = self._model.update_setting(
-            pid, args['name'], args['collaborator'])
         return data, code
