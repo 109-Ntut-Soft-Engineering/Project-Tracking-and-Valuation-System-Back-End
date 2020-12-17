@@ -110,6 +110,6 @@ class GithubObjectParser:
                     'name': repo.name,
                     'id': repo.id,
                     'type': 'Starred' if repos.index(source) == 1 else 'Public'if repo.private == False else 'Private',
-                    'source': 'Github'
+                    'source': 'github'
                 })
         return info

@@ -11,8 +11,8 @@ from flask_restful import abort
 class ConnTool():
     def __init__(self):
         # 不行的換一個（和專案roots的設定有關
-        # firebaseKey = os.path.abspath(os.path.join('.', 'src'))
-        firebaseKey = os.path.abspath(os.path.join('.'))
+        firebaseKey = os.path.abspath(os.path.join('.', 'src'))
+        # firebaseKey = os.path.abspath(os.path.join('.'))
         if not config.TEST:
             firebaseKey = os.path.join(firebaseKey, 'firebaseKey.json')
         else:
