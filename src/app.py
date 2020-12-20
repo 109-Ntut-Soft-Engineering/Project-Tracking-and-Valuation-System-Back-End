@@ -9,6 +9,7 @@ from resources.project_code_frequency_resource import ProjectCodeFrequencyResour
 from resources.repository_resource import RepositoryResource
 from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
+from resources.project_weekcommit_resource import ProjectWeekCommitResource
 app = Flask("soft engineering")
 app.config.from_object(config)
 api = Api(app)
@@ -27,6 +28,9 @@ api.add_resource(RepositoryResource,
 
 # for code frequency
 api.add_resource(ProjectCodeFrequencyResource, '/project/code_freq/<string:name>')
+
+# for commit contribution
+api.add_resource(ProjectWeekCommitResource, '/project/week_commit/<string:name>')
 
 if __name__ == "__main__":
     app.run()

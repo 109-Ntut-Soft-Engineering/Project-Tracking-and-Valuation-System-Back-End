@@ -1,5 +1,6 @@
 from github import Label, Issue, StatsCodeFrequency\
     , Commit, GitCommit, GitAuthor, CommitStats, NamedUser
+import datetime
 
 
 class GithubObjectParser:
@@ -37,6 +38,34 @@ class GithubObjectParser:
         info["additions"] = stats_code_frequency.additions
         info['deletion'] = stats_code_frequency.deletions
         return info
+
+    @staticmethod
+    def parser_weekcommit(commits: enumerate) -> dict:
+        repo_week_commit = {}
+        commit_date_list = []
+        for commit in commits:
+            date = commit.commit.committer.date
+            commit_date_list.append(date)
+        
+        repo_week_commit['start_time'],  repo_week_commit['end_time'] = GithubObjectParser.parser_start_and_end_times(commit_date_list)
+        repo_week_commit['commit_info'] = GithubObjectParser.parser_weekcommit_info(commit_date_list)
+
+        return repo_week_commit
+
+    @staticmethod
+    def parser_start_and_end_times(dates: list):
+        return str(dates[-1].strftime("%Y/%m/%d")), str(dates[0].strftime("%Y/%m/%d"))
+
+    @staticmethod
+    def parser_weekcommit_info(dates: list) -> list:
+        weekcommit_info_list = []
+        for date in dates:
+            weekcommit_info = {}
+            weekcommit_info['week_day'] = str(date.strftime("%A"))
+            weekcommit_info['time'] = str(date.strftime("%H"))
+            weekcommit_info_list.append(weekcommit_info)
+        return weekcommit_info_list
+
 
     @staticmethod
     def parser_issues(issues: list) -> list:
