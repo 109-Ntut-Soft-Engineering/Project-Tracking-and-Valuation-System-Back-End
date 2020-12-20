@@ -12,7 +12,7 @@ class ProjectWeekCommitModel():
     def get_weekcommit(self, name, token):
         requester = GithubApiRequester(' ef4164107b7e4e2505abd8fced70951f44e51964')
         repos_commits = []
-        rp = requester.get_rp_by_rul('https://github.com/Gougon-Side-Project/Android-DodoCagePhonograph')
+        rp = requester.get_rp_by_rul('https://github.com/zoom/sample-app-web')
         if rp is None:
             pass
         else:
@@ -37,13 +37,8 @@ class ProjectWeekCommitModel():
         for week_day in week_days:
             commit_info = {}
             commit_info['week_day'] = week_day
-            commits = []
             for hours in range(24):
-                commits_detail = {}
-                commits_detail['time'] = str(hours).zfill(2)
-                commits_detail['commit'] = 0
-                commits.append(commits_detail)
-            commit_info['commits'] = commits
+                commit_info[str(hours).zfill(2)] = 0
             commit_info_list.append(commit_info)
 
         week_dict['start_time'] = str(datetime.date(2099, 12, 31))
@@ -54,10 +49,7 @@ class ProjectWeekCommitModel():
     def __calculate_commit_times(self, week_list: list, commit_info: dict):
         for week_day in week_list:
             if week_day['week_day'] == commit_info['week_day']:
-                for commit in week_day['commits']:
-                    if commit['time'] == commit_info['time']:
-                        commit['commit'] = commit['commit'] + 1
-                        break
+                week_day[commit_info['time']] = week_day[commit_info['time']] + 1
                 break
 
     def __get_project(self, name):
