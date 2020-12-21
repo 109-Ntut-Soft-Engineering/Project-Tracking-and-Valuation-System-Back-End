@@ -25,8 +25,8 @@ class Project():
         dest = {
             'name': self.name,
             'owner': self.owner,
-            'collaborator': self.collaborator,
-            'repositories': self.repositories,
+            # 'collaborator': self.collaborator,
+            # 'repositories': self.repositories,
             'updated': self.updated.__str__()
         }
 

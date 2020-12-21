@@ -45,8 +45,13 @@ class UserModel():
             print(user_dict, file=sys.stderr)
             return user_dict, status_code.OK
 
-    def get_user_githubToken(self):
-        info = self._db.collection('users').document(self._uid).get().to_dict()
+    def get_user_githubToken(self, uid=None):
+        info = None
+        if uid == None:
+            info = self._db.collection('users').document(
+                self._uid).get().to_dict()
+        else:
+            info = self._db.collection('users').document(uid).get().to_dict()
         if 'Github' in info:
             return info['Github']
         else:
