@@ -59,6 +59,10 @@ class GithubApiRequester(Requester):
         issues = rp.get_issues()
         return GithubObjectParser.parser_issues(issues)
 
+    def get_weekcommit(self, rp):
+        commits = rp.get_commits()
+        return GithubObjectParser.parser_weekcommit(commits)
+
     def get_code_freq(self, rp) -> list:
         try:
             stats_code_frequency = rp.get_stats_code_frequency()

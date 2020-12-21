@@ -32,8 +32,10 @@ class ProjectModel():
 
     def __build_project_list(self, proj_list, projects):
         for project in projects:
-
-            proj_dic = Project.from_dict(project.to_dict()).to_dict()
+            tmpData = project.to_dict()
+            tmpData['owner'] = self._userModel.get_user_info_by_uid(
+                tmpData['owner'])[0]
+            proj_dic = Project.from_dict(tmpData).to_dict()
             proj_dic.update({'id': project.id})
             proj_list.append(proj_dic)
 
@@ -55,13 +57,18 @@ class ProjectModel():
             }, status_code.NOT_FOUND
 
     def get_project_repos(self, pid):
-        repos = self._db.collection('projects').document(pid).get().to_dict()
-        token = UserModel().get_user_githubToken()
+        project, token = self._db.collection(
+            'projects').document(pid).get().to_dict(), None
+        if project['owner'] == self._uid:
+            token = UserModel().get_user_githubToken()
+        else:
+            token = UserModel().get_user_githubToken(project['owner'])
         info = {'repos': []}
+
         if token != None:
             requester = GithubApiRequester(token)
             for repo in requester.get_user_repoList()['repos']:
-                if repo['id'] in repos['repositories']['Github']:
+                if repo['id'] in project['repositories']['Github']:
                     info['repos'].append(repo)
             return info, status_code.OK
         else:
@@ -101,11 +108,11 @@ class ProjectModel():
         return False
 
     def delete_project(self, pid):
-        project = self._db.collection(u'projects').document(pid)
-        if not project.get().exists:
-            return None, status_code.NOT_FOUND
-        project.delete()
-        return None, status_code.OK
+        project = self._db.collection('projects').document(pid)
+        if project.get().exists and project.get().to_dict()['owner'] == self._uid:
+            project.delete()
+            return None, status_code.OK
+        return None, status_code.NOT_FOUND
 
     def update_repos(self, pid, data):
         project = self._db.collection('projects').document(pid)
@@ -132,7 +139,6 @@ class ProjectModel():
 
     def update_collaborator(self, pid, collaborator, action):
         project = self._db.collection('projects').document(pid)
-        info, code = None, None
 
         if project.get().exists:
 
@@ -142,14 +148,16 @@ class ProjectModel():
                 if code == status_code.NOT_FOUND:
                     return info, code
                 elif info['uid'] in project.get().to_dict()['collaborator']:
-                    return {'msg': '協作者已存在！'}, status_code.BAD_REQUEST
-
+                    info, code = {'msg': '協作者已存在！'}, status_code.BAD_REQUEST
+                elif info['uid'] == self._uid:
+                    info, code = {'msg': '您已是專案擁有者！'}, status_code.BAD_REQUEST
                 else:
                     project.update(
                         {'collaborator': firestore.ArrayUnion([info['uid']]),
                          'updated': firestore.SERVER_TIMESTAMP
                          })
-                return info, status_code.OK
+                    code = status_code.OK
+                return info, code
             elif action == 'remove':
                 project.update(
                     {'collaborator': firestore.ArrayRemove([collaborator]),
@@ -160,7 +168,7 @@ class ProjectModel():
                 return {'msg': 'miss action'}, status_code.BAD_REQUEST
 
         else:
-            return {'msg': 'Project Not Found'}, code
+            return {'msg': 'Project Not Found'}, status_code.NOT_FOUND
 
     def update_name(self, pid, name):
         project = self._db.collection('projects').document(pid)
