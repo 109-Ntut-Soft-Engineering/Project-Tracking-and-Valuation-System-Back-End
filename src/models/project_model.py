@@ -102,7 +102,10 @@ class ProjectModel():
     def __is_project_name_used(self, name):
         projects = self._db.collection(
             'projects').where('name', '==', name).get()
-        return len(projects) != 0
+        for project in projects:
+            if project.to_dict()['owner'] == self._uid:
+                return True
+        return False
 
     def delete_project(self, pid):
         project = self._db.collection('projects').document(pid)

@@ -8,11 +8,10 @@ from flask import request
 from flask_restful import abort
 
 
-class ConnTool():
+class ConnTool:
     def __init__(self):
-        # 不行的換一個（和專案roots的設定有關
-        firebaseKey = os.path.abspath(os.path.join('.', 'src'))
-        # firebaseKey = os.path.abspath(os.path.join('.'))
+        # 解決root的問題(之前的兩個可以不用了)
+        firebaseKey = os.path.abspath(os.path.join(__file__, '..'))
         if not config.TEST:
             firebaseKey = os.path.join(firebaseKey, 'firebaseKey.json')
         else:
@@ -40,3 +39,4 @@ class ConnTool():
     @property
     def uid(self):
         return self._uid
+

@@ -22,6 +22,7 @@
     * paras:
         * name: str, user名稱
         * email: str, 註冊的email
+        
 ## Projects Resource
 * path: /project, method: GET
     * 依照當前連線的uid獲得所有project的pid
@@ -31,6 +32,7 @@
     * 新增project
     * paras:
         * name: str, project名稱
+        
 ## Project Setting Resource
 * path: /project/{pid}/setting, method: GET
     * 取得pid相符的project的name, owner, collaborator資訊
@@ -45,6 +47,7 @@
     * paras:
         * pid: str, project的id
         * collaborator: list, 欲替代的collaborator
+        
 ## Project Repos Resource
 * path: /project/{pid}/repos, method: GET
     * 取得與pid相符的project的repositories
@@ -57,8 +60,15 @@
         * collaborator: list, project的collaborator
         * repositories: list, project的repositories
         * name: str, project的名稱
+        
 ## Project Commit Resource
 * path: /project/{pid}/commit, method: GET
     * 取得與pid相符的project的commit資訊
+    * paras:
+        * pid: str, project的id
+      
+## Project Code Frequency Resource
+* path: /project/{pid}/code_freq, method: GET
+    * 取得與pid相符的project的code frequency資訊
     * paras:
         * pid: str, project的id

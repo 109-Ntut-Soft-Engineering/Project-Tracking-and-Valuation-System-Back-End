@@ -9,5 +9,7 @@ class ProjectCodeFrequencyResource(Resource):
         self._model = ProjectCodeFrequencyModel()
 
     def get(self, pid):
-        print('pid', pid)
-        return {"code_freq": self._model.get_code_freq(pid)}, status_code.OK
+        try:
+            return {"code_freq": self._model.get_code_freq(pid)}, status_code.OK
+        except TypeError:
+            return {'message': 'cant find pid:{} code frequency'.format(pid)}, 404
