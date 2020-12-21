@@ -1,5 +1,5 @@
 from github import Label, Issue, StatsCodeFrequency\
-    , Commit, GitCommit, GitAuthor, CommitStats, NamedUser
+    , Commit, GitCommit, GitAuthor, CommitStats, NamedUser, IssueComment, PaginatedList
 import datetime
 
 
@@ -78,9 +78,11 @@ class GithubObjectParser:
     @staticmethod
     def parser_issue(issue: Issue) -> dict:
         info = {}
-        info["name"] = issue.title
+        info["title"] = issue.title
         info["labels"] = GithubObjectParser.parser_labels(issue.labels)
-        info["url"] = issue.url
+        info["time"] = issue.created_at.strftime('%Y/%m/%d')
+        #info["comments"] = issue.get_comments
+        info["comments"] = GithubObjectParser.parser_comments(issue.get_comments())
         return info
 
     @staticmethod
@@ -97,6 +99,23 @@ class GithubObjectParser:
         info['name'] = label.name
         info["color"] = label.color
         return info
+
+    @staticmethod
+    def parser_comments(commentList: PaginatedList) -> list:
+        comments_info = []
+        for comment in commentList.get_page(0):
+            comment_info = GithubObjectParser.parser_comment(comment)
+            comments_info.append(comment_info)
+        return comments_info
+
+    @staticmethod
+    def parser_comment(comment: IssueComment) -> dict:
+        info = {}
+        info['body'] = comment.body
+        info["user"] = comment.user.login
+        info["time"] = comment.created_at.strftime('%Y/%m/%d')
+        return info
+
 
     @staticmethod
     def parser_named_user(name_user: NamedUser):

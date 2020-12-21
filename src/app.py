@@ -10,6 +10,7 @@ from resources.repository_resource import RepositoryResource
 from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
 from resources.project_weekcommit_resource import ProjectWeekCommitResource
+from resources.project_Issue_message_resource import ProjectIssueMessageResource
 app = Flask("soft engineering")
 app.config.from_object(config)
 api = Api(app)
@@ -32,5 +33,9 @@ api.add_resource(ProjectCodeFrequencyResource, '/project/code_freq/<string:name>
 # for commit contribution
 api.add_resource(ProjectWeekCommitResource, '/project/week_commit/<string:name>')
 
-if __name__ == "__main__":
+# for issue message
+api.add_resource(ProjectIssueMessageResource, '/project/issue/<string:name>')
+
+
+if __name__ == "__main__":  
     app.run()
