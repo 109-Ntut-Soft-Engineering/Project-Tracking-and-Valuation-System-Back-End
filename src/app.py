@@ -1,7 +1,3 @@
-from resources.project_commit_resource import ProjectCommitResource
-from resources.authorization_resource import AuthResource
-from resources.repository_resource import RepositoryResource
-from resources.project_code_frequency_resource import ProjectCodeFrequencyResource
 from flask import Flask, request
 from flask_restful import Api
 from flask_cors import CORS
@@ -9,8 +5,14 @@ from resources.user_resource import UserResource
 from resources.projects_resource import ProjectsResource
 from resources.project_repos_resource import ProjectReposResource
 from resources.project_setting_resource import ProjectSettingResource
+from resources.projects_resource import ProjectsResource
+from resources.project_code_frequency_resource import ProjectCodeFrequencyResource
+from resources.repository_resource import RepositoryResource
+from resources.authorization_resource import AuthResource
+from resources.project_commit_resource import ProjectCommitResource
+from resources.project_weekcommit_resource import ProjectWeekCommitResource
+from resources.project_Issue_message_resource import ProjectIssueMessageResource
 import config
-
 
 app = Flask("soft engineering")
 app.config.from_object(config)
@@ -36,6 +38,12 @@ api.add_resource(ProjectCodeFrequencyResource,
                  '/project/<string:pid>/code_freq')
 api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
 
+# for commit contribution
+api.add_resource(ProjectWeekCommitResource, '/project/<string:pid>/week_commit')
 
-if __name__ == "__main__":
+# for issue message
+api.add_resource(ProjectIssueMessageResource, '/project/<string:pid>/issue')
+
+
+if __name__ == "__main__":  
     app.run()

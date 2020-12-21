@@ -1,4 +1,6 @@
-from github import Label, Issue, StatsCodeFrequency, Commit, GitCommit, GitAuthor, CommitStats, NamedUser
+from github import Label, Issue, StatsCodeFrequency\
+    , Commit, GitCommit, GitAuthor, CommitStats, NamedUser, IssueComment, PaginatedList
+import datetime
 
 
 class GithubObjectParser:
@@ -38,6 +40,34 @@ class GithubObjectParser:
         return info
 
     @staticmethod
+    def parser_weekcommit(commits: enumerate) -> dict:
+        repo_week_commit = {}
+        commit_date_list = []
+        for commit in commits:
+            date = commit.commit.committer.date
+            commit_date_list.append(date)
+        
+        repo_week_commit['start_time'],  repo_week_commit['end_time'] = GithubObjectParser.parser_start_and_end_times(commit_date_list)
+        repo_week_commit['commit_info'] = GithubObjectParser.parser_weekcommit_info(commit_date_list)
+
+        return repo_week_commit
+
+    @staticmethod
+    def parser_start_and_end_times(dates: list):
+        return str(dates[-1].strftime("%Y/%m/%d")), str(dates[0].strftime("%Y/%m/%d"))
+
+    @staticmethod
+    def parser_weekcommit_info(dates: list) -> list:
+        weekcommit_info_list = []
+        for date in dates:
+            weekcommit_info = {}
+            weekcommit_info['week_day'] = str(date.strftime("%A"))
+            weekcommit_info['time'] = str(date.strftime("%H"))
+            weekcommit_info_list.append(weekcommit_info)
+        return weekcommit_info_list
+
+
+    @staticmethod
     def parser_issues(issues: list) -> list:
         issues_info = []
         for issue in issues:
@@ -48,9 +78,11 @@ class GithubObjectParser:
     @staticmethod
     def parser_issue(issue: Issue) -> dict:
         info = {}
-        info["name"] = issue.title
+        info["title"] = issue.title
         info["labels"] = GithubObjectParser.parser_labels(issue.labels)
-        info["url"] = issue.url
+        info["time"] = issue.created_at.strftime('%Y/%m/%d')
+        #info["comments"] = issue.get_comments
+        info["comments"] = GithubObjectParser.parser_comments(issue.get_comments())
         return info
 
     @staticmethod
@@ -67,6 +99,23 @@ class GithubObjectParser:
         info['name'] = label.name
         info["color"] = label.color
         return info
+
+    @staticmethod
+    def parser_comments(commentList: PaginatedList) -> list:
+        comments_info = []
+        for comment in commentList.get_page(0):
+            comment_info = GithubObjectParser.parser_comment(comment)
+            comments_info.append(comment_info)
+        return comments_info
+
+    @staticmethod
+    def parser_comment(comment: IssueComment) -> dict:
+        info = {}
+        info['body'] = comment.body
+        info["user"] = comment.user.login
+        info["time"] = comment.created_at.strftime('%Y/%m/%d')
+        return info
+
 
     @staticmethod
     def parser_named_user(name_user: NamedUser):
