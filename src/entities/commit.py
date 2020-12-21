@@ -1,16 +1,16 @@
 class Commit():
-    def __init__(self, user_name, message, lines, time):
-        self.user_name = user_name
+    def __init__(self, author, message, lines, time):
+        self.author = author
         self.message = message
         self.lines = lines
         self.time = time
 
     @staticmethod
     def from_dict(source):
-        commit_msg = Commit(source[u'user_name'], source[u'message'], source[u'lines'], source[u'time'])
+        commit_msg = Commit(source[u'author'], source[u'message'], source[u'lines'], source[u'time'])
 
-        if u'user_name' in source:
-            commit_msg.user_name = source[u'user_name']
+        if u'author' in source:
+            commit_msg.author = source[u'author']
         if u'message' in source:
             commit_msg.message = source[u'message']
         if u'lines' in source:
@@ -22,14 +22,14 @@ class Commit():
     
     def to_dict(self):
         dest = {
-            u'user_name': self.user_name,
+            u'author': self.author,
             u'message': self.message,
             u'lines': self.lines,
             u'time': self.time
         }
 
-        if self.user_name:
-            dest[u'user_name'] = self.user_name
+        if self.author:
+            dest[u'author'] = self.author
         if self.message:
             dest[u'message'] = self.message
         if self.lines:
@@ -41,11 +41,11 @@ class Commit():
 
     def __repr__(self):
         return (
-            f'project(\
-                pid={self.user_name}, \
-                name={self.message}, \
-                owner={self.lines}, \
-                repositories={self.time}\
+            f'commit(\
+                author={self.author}, \
+                message={self.message}, \
+                lines={self.lines}, \
+                time={self.time}\
             )'
         )
     

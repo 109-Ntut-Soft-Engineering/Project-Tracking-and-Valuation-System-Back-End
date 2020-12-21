@@ -8,5 +8,7 @@ class ProjectCommitResource(Resource):
         self._model = ProjectCommitModel()
 
     def get(self, pid):
+        print(pid, file=sys.stderr)
         commits = self._model.get_project_commit_info(pid)
-        return jsonify(commits)
+        print(commits, file=sys.stderr)
+        return commits, 200
