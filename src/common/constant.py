@@ -1,1 +1,2 @@
 DEL_BATCH_SIZE = 100
+APIKEY = 'AIzaSyBSx_sJAvz0AmmffTDwODGAioXfyqP4Foc'

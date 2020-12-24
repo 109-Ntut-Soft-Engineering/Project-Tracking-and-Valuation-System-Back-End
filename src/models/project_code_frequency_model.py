@@ -1,5 +1,6 @@
 from utilities.github_api_requester import GithubApiRequester
 from conn_tool import ConnTool
+from models.user_model import UserModel
 
 
 class ProjectCodeFrequencyModel:
@@ -7,13 +8,15 @@ class ProjectCodeFrequencyModel:
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
+        self._userModel = UserModel()
 
     def get_code_freq(self, pid):
         project = self.__get_project(pid)
         repositories_id = project['repositories']['Github']
         print('repositories:', repositories_id)
 
-        token = ' ef4164107b7e4e2505abd8fced70951f44e51964'
+        token = self._userModel.get_user_githubToken()
+
         requester = GithubApiRequester(token)
         code_freqies = []
         for id in repositories_id:
@@ -37,9 +40,9 @@ class ProjectCodeFrequencyModel:
             date_code.append({'date': date, 'code': code})
         return date_code
 
-
     def __get_project(self, pid):
-        project = self._db.collection(u'projects').document(pid).get().to_dict()
+        project = self._db.collection(
+            u'projects').document(pid).get().to_dict()
 
         return project
 

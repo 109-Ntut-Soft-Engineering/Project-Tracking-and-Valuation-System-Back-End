@@ -1,6 +1,7 @@
 from utilities.github_api_requester import GithubApiRequester
 from conn_tool import ConnTool
 import datetime
+from models.user_model import UserModel
 
 
 class ProjectWeekCommitModel():
@@ -8,12 +9,13 @@ class ProjectWeekCommitModel():
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
+        self._userModel = UserModel()
 
     def get_weekcommit(self, pid):
         project = self.__get_project(pid)
         repositories_id = project['repositories']['Github']
-        
-        token = ' ef4164107b7e4e2505abd8fced70951f44e51964'
+
+        token = self._userModel.get_user_githubToken()
         requester = GithubApiRequester(token)
 
         repos_commits = []
@@ -23,7 +25,7 @@ class ProjectWeekCommitModel():
                 pass
             else:
                 repos_commits.append(requester.get_weekcommit(rp))
-        
+
         all_repo_week_commit = self.__create_repo_week_dict()
 
         for repo_commits in repos_commits:
@@ -32,14 +34,16 @@ class ProjectWeekCommitModel():
             if repo_commits['end_time'] > all_repo_week_commit['end_time']:
                 all_repo_week_commit['end_time'] = repo_commits['end_time']
             for commit_info in repo_commits['commit_info']:
-                self.__calculate_commit_times(all_repo_week_commit['commit_info'], commit_info)
-
+                self.__calculate_commit_times(
+                    all_repo_week_commit['commit_info'], commit_info)
+        print(all_repo_week_commit)
         return all_repo_week_commit
 
     def __create_repo_week_dict(self):
         week_dict = {}
         commit_info_list = []
-        week_days = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+        week_days = ('Monday', 'Tuesday', 'Wednesday',
+                     'Thursday', 'Friday', 'Saturday', 'Sunday')
         for week_day in week_days:
             commit_info = {}
             commit_info['week_day'] = week_day
@@ -55,11 +59,12 @@ class ProjectWeekCommitModel():
     def __calculate_commit_times(self, week_list: list, commit_info: dict):
         for week_day in week_list:
             if week_day['week_day'] == commit_info['week_day']:
-                week_day[commit_info['time']] = week_day[commit_info['time']] + 1
+                week_day[commit_info['time']
+                         ] = week_day[commit_info['time']] + 1
                 break
 
     def __get_project(self, pid):
-            project = self._db.collection(u'projects').document(pid).get().to_dict()
+        project = self._db.collection(
+            u'projects').document(pid).get().to_dict()
 
-            return project
-
+        return project

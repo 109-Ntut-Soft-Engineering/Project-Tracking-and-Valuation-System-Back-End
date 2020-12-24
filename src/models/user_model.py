@@ -8,6 +8,7 @@ import json
 import sys
 from conn_tool import ConnTool
 from firebase_admin import auth
+import firebase_admin
 
 
 class UserModel():
@@ -41,7 +42,7 @@ class UserModel():
                 return {'msg': '找不到使用者！'}, status_code.NOT_FOUND
         if user.exists:
             user_dict = User.from_dict(user.to_dict()).to_dict()
-            user_dict.update({'uid': user.id})
+            # user_dict.update({'uid': user.id})
             print(user_dict, file=sys.stderr)
             return user_dict, status_code.OK
 
@@ -83,3 +84,20 @@ class UserModel():
             return 'Get access token success !', status_code.OK
         else:
             return resp["error_description"], status_code.BAD_REQUEST
+
+    def update_user_info(self, email, name):
+        user = self._db.collection('users').document(self._uid)
+        if user.get().exists:
+
+            try:
+
+                auth.update_user(self._uid, email=email)
+                user.update({'name': name, 'email': email})
+            except Exception as e:
+                # print(type(e))
+                if type(e) is firebase_admin._auth_utils.EmailAlreadyExistsError:
+                    return {'error': 'Email已存在'}, status_code.BAD_REQUEST
+                else:
+                    return {'error': '未知錯誤'}, status_code.BAD_REQUEST
+
+            return status_code.OK

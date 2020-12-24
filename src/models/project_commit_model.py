@@ -12,17 +12,18 @@ class ProjectCommitModel():
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
-        self._token = UserModel().get_user_githubToken()
+        self._token = UserModel().get_user_githubToken
 
     def get_project_commit_info(self, pid):
-        project = self._db.collection(u'projects').document(pid).get().to_dict()
+        project = self._db.collection(
+            u'projects').document(pid).get().to_dict()
         commits = self.__get_commits(project)
         return {"commits": commits.to_dict()}
 
     def __get_commits(self, project):
         repositories = project['repositories']['Github']
 
-        requester = GithubApiRequester(self._token)
+        requester = GithubApiRequester(self._token(project['owner']))
 
         commit_list = []
         for repository in repositories:
@@ -53,11 +54,10 @@ class ProjectCommitModel():
     def sort_commits_by_time(self, commit_msgs, sort_type):
         commit_list = commit_msgs.commit_list
         if sort_type == 'desc':
-            commit_list.sort(key=lambda x: 
-                datetime.strptime(x.time, '%Y/%m/%d'), reverse=False)
+            commit_list.sort(key=lambda x:
+                             datetime.strptime(x.time, '%Y/%m/%d'), reverse=False)
         elif sort_type == 'asc':
-            commit_list.sort(key=lambda x: 
-                datetime.strptime(x.time, '%Y/%m/%d'), reverse=True)
+            commit_list.sort(key=lambda x:
+                             datetime.strptime(x.time, '%Y/%m/%d'), reverse=True)
         else:
             exit('sort type only have "desc" & "asc"')
-
