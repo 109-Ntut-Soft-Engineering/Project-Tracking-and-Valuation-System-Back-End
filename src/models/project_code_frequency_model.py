@@ -1,6 +1,7 @@
 from utilities.github_api_requester import GithubApiRequester
 from conn_tool import ConnTool
 from models.user_model import UserModel
+from datetime import datetime
 
 
 class ProjectCodeFrequencyModel:
@@ -38,7 +39,23 @@ class ProjectCodeFrequencyModel:
         date_code = []
         for date, code in code_freq_series.items():
             date_code.append({'date': date, 'code': code})
+
+        date_code = self.__sort_code_freq(date_code)
+        date_code = self.__delete_post_zero(date_code)
         return date_code
+
+    def __sort_code_freq(self, code_freq):
+        dateFormatter = '%Y/%m/%d'
+        code_freq = sorted(code_freq, key=lambda data: datetime.strptime(data['date'], dateFormatter))
+        print("sorted", code_freq)
+        return code_freq
+
+    def __delete_post_zero(self, code_freq):
+        for i in range(len(code_freq)-1, 0, -1):
+            print("code[i]:", code_freq[i]['code'])
+            if code_freq[i]['code'] != 0:
+                return code_freq[0:i]
+        return code_freq[0:]
 
     def __get_project(self, pid):
         project = self._db.collection(
@@ -48,3 +65,5 @@ class ProjectCodeFrequencyModel:
 
     def __get_unique(self, collection):
         return next(collection.stream())
+
+
