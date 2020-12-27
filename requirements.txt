@@ -1,7 +1,9 @@
 flask
 flask_restful
+flask_testing
 flask_cors
 firebase_admin
 pytest
+pytest-cov
 PyGithub
 requests2

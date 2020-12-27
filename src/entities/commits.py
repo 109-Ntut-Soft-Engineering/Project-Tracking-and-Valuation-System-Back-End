@@ -32,13 +32,4 @@ class Commits():
             dest[u'commit_list'] = [commit.to_dict() for commit in self.commit_list]
         
         return dest
-
-    def __repr__(self):
-        return (
-            f'project(\
-                name={self.name}, \
-                member={self.member}, \
-                commit_list={self.commit_list}\
-            )'
-        )
     

@@ -38,14 +38,4 @@ class Commit():
             dest[u'time'] = self.time
         
         return dest
-
-    def __repr__(self):
-        return (
-            f'commit(\
-                author={self.author}, \
-                message={self.message}, \
-                lines={self.lines}, \
-                time={self.time}\
-            )'
-        )
     

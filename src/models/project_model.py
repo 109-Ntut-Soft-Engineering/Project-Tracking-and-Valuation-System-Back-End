@@ -120,6 +120,9 @@ class ProjectModel():
         print(data)
 
         if project.get().exists:
+            if not self.__is_project_owner(project.get().to_dict(), self._uid):
+                return None, status_code.OK
+
             action = data['repositories']['action']
             if action == 'update':
                 project.update(
@@ -136,6 +139,9 @@ class ProjectModel():
             return None, status_code.OK
         else:
             return None, status_code.NOT_FOUND
+
+    def __is_project_owner(self, project, uid):
+        return project['owner'] == uid
 
     def update_collaborator(self, pid, collaborator, action):
         project = self._db.collection('projects').document(pid)
