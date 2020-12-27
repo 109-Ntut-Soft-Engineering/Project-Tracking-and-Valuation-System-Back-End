@@ -100,8 +100,7 @@ class ProjectModel():
         return None, status_code.OK
 
     def __is_project_name_used(self, name):
-        projects = self._db.collection(
-            'projects').where('name', '==', name).get()
+        projects = self._db.collection('projects').where('name', '==', name).where('owner', '==', self._uid).get()
         for project in projects:
             if project.to_dict()['owner'] == self._uid:
                 return True
