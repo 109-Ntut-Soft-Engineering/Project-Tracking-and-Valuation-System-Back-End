@@ -52,3 +52,6 @@ Thumbs.db
 firebaseKey.json
 testFirebaseKey.json
 commits_json
+
+cov.xml
+.coverage
