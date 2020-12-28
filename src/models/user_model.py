@@ -42,7 +42,7 @@ class UserModel():
                 return {'msg': '找不到使用者！'}, status_code.NOT_FOUND
         if user.exists:
             user_dict = User.from_dict(user.to_dict()).to_dict()
-            # user_dict.update({'uid': user.id})
+            user_dict.update({'uid': user.id})
             print(user_dict, file=sys.stderr)
             return user_dict, status_code.OK
 
