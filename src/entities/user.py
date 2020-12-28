@@ -1,6 +1,5 @@
 class User():
     def __init__(self, name, email):
-
         self.name = name
         self.email = email
 
@@ -22,11 +21,3 @@ class User():
         #     dest['email'] = self.email
 
         return dest
-
-    def __repr__(self):
-        return (
-            f'user(\
-                name={self.name}, \
-                email={self.email} \
-            )'
-        )
