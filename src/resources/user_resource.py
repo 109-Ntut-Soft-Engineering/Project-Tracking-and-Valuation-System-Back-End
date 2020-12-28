@@ -3,7 +3,6 @@ from flask_restful import Resource, reqparse
 from models.user_model import UserModel
 from common import error_code, status_code
 from common.util import is_iter_empty
-from common.status_code import is_client_error
 
 
 class UserResource(Resource):

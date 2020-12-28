@@ -55,3 +55,5 @@ testFirebaseKey.json
 commits_json
 
 .vscode/
+cov.xml
+.coverage

@@ -2,7 +2,6 @@ from conn_tool import ConnTool
 from entities.project import Project
 from entities.setting import Setting
 from common import status_code, error_code
-from common.status_code import is_client_error
 from common.util import is_iter_empty
 import sys
 from flask_restful import abort

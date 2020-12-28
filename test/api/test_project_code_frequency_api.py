@@ -11,7 +11,7 @@ from test.api.base_setting import BaseSetting
 class TestProjectCodeFrequencyApi(BaseSetting):
     def setUp(self) -> None:
         self.set_auth()
-        self.test_pid = '1FuJ5veDrv4WBzwcgeot'
+        self.test_pid = 'Qb2783tRIxZeGKZYrVDh'
 
     def get_code_freq_api(self, pid):
         return BASE + 'project/{}/code_freq'.format(pid)
