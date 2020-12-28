@@ -1,7 +1,6 @@
 from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from models.project_model import ProjectModel
-from common.status_code import is_client_error
 
 
 class ProjectsResource(Resource):

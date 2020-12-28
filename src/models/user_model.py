@@ -1,7 +1,6 @@
 from conn_tool import ConnTool
 from entities.user import User
 from common import status_code, error_code
-from common.status_code import is_client_error
 from common.util import is_iter_empty
 import requests
 import json
