@@ -2,12 +2,12 @@ from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from models.user_model import UserModel
 from common import error_code, status_code
-from common.util import is_iter_empty
+from conn_tool import ConnTool
 
 
 class UserResource(Resource):
     def __init__(self):
-        self._model = UserModel()
+        self._model = UserModel(ConnTool())
 
     def get(self):
         data, code = self._model.get_user_info_by_uid()

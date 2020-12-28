@@ -1,4 +1,3 @@
-from conn_tool import ConnTool
 from utilities.github_api_requester import GithubApiRequester
 from entities.commit import Commit
 from entities.commits import Commits
@@ -8,11 +7,10 @@ import sys
 
 
 class ProjectCommitModel():
-    def __init__(self):
-        _conn_tool = ConnTool()
-        self._db = _conn_tool.db
-        self._uid = _conn_tool.uid
-        self._token = UserModel().get_user_githubToken
+    def __init__(self, conn_tool):
+        self._db = conn_tool.db
+        self._uid = conn_tool.uid
+        self._token = UserModel(conn_tool).get_user_githubToken
 
     def get_project_commit_info(self, pid):
         project = self._db.collection(

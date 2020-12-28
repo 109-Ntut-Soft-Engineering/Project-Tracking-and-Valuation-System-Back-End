@@ -2,10 +2,10 @@ from models.user_model import UserModel
 
 
 class Setting():
-    def __init__(self, name, collaborator):
+    def __init__(self, name, collaborator, userModel):
         self.name = name
         self.collaborator = collaborator
-        self.__userModel = UserModel()
+        self.__userModel = userModel
 
     def to_dict(self):
         dest = {

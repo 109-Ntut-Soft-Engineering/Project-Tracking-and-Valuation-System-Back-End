@@ -9,7 +9,7 @@ class ProjectCodeFrequencyModel:
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
-        self._userModel = UserModel()
+        self._userModel = UserModel(_conn_tool)
 
     def get_code_freq(self, pid):
         project = self.__get_project(pid)

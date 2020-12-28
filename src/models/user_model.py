@@ -1,7 +1,6 @@
 from conn_tool import ConnTool
 from entities.user import User
 from common import status_code, error_code
-from common.util import is_iter_empty
 import requests
 import json
 import sys
@@ -11,10 +10,9 @@ import firebase_admin
 
 
 class UserModel():
-    def __init__(self):
-        _conn_tool = ConnTool()
-        self._db = _conn_tool.db
-        self._uid = _conn_tool.uid
+    def __init__(self, conn_tool):
+        self._db = conn_tool.db
+        self._uid = conn_tool.uid
 
     def get_user_info_by_email(self, email):
 

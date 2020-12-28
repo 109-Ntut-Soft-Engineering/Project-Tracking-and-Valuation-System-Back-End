@@ -2,7 +2,6 @@ from conn_tool import ConnTool
 from entities.project import Project
 from entities.setting import Setting
 from common import status_code, error_code
-from common.util import is_iter_empty
 import sys
 from flask_restful import abort
 from google.cloud import firestore
@@ -17,7 +16,7 @@ class ProjectModel():
         _conn_tool = ConnTool()
         self._db = _conn_tool.db
         self._uid = _conn_tool.uid
-        self._userModel = UserModel()
+        self._userModel = UserModel(_conn_tool)
 
     def get_project_list(self):
         proj_owner = self._db.collection('projects').where(
@@ -59,9 +58,9 @@ class ProjectModel():
         project, token = self._db.collection(
             'projects').document(pid).get().to_dict(), None
         if project['owner'] == self._uid:
-            token = UserModel().get_user_githubToken()
+            token = self._userModel.get_user_githubToken()
         else:
-            token = UserModel().get_user_githubToken(project['owner'])
+            token = self._userModel.get_user_githubToken(project['owner'])
         info = {'repos': []}
 
         if token != None:
@@ -77,7 +76,7 @@ class ProjectModel():
         project = self._db.collection('projects').document(pid).get()
         if project.exists:
             proj_dic = project.to_dict()
-            setting = Setting(proj_dic['name'], proj_dic['collaborator'])
+            setting = Setting(proj_dic['name'], proj_dic['collaborator'], self._userModel)
             return setting.to_dict(), status_code.OK
         return None, status_code.NOT_FOUND
 

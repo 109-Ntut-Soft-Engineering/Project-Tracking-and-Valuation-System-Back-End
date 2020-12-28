@@ -1,5 +1,6 @@
 import requests
 from src.app import app
+from src.common import constant
 from flask_testing import TestCase
 
 
@@ -21,7 +22,7 @@ class BaseSetting(TestCase):
         }
 
     def get_id_token(self, data):
-        api_key = 'AIzaSyBSx_sJAvz0AmmffTDwODGAioXfyqP4Foc'
+        api_key = constant.APIKEY
         auth_api = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+api_key
         res = requests.post(auth_api, data)
         if res.status_code == 200:
