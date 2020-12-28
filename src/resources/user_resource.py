@@ -1,9 +1,6 @@
-from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from models.user_model import UserModel
-from common import error_code, status_code
 from conn_tool import ConnTool
-
 
 class UserResource(Resource):
     def __init__(self):

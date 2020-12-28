@@ -1,10 +1,8 @@
-from conn_tool import ConnTool
 from entities.user import User
-from common import status_code, error_code
+from common import status_code
 import requests
 import json
 import sys
-from conn_tool import ConnTool
 from firebase_admin import auth
 import firebase_admin
 
@@ -39,7 +37,7 @@ class UserModel():
                 return {'msg': '找不到使用者！'}, status_code.NOT_FOUND
         if user.exists:
             user_dict = User.from_dict(user.to_dict()).to_dict()
-            # user_dict.update({'uid': user.id})
+            user_dict.update({'uid': user.id})
             print(user_dict, file=sys.stderr)
             return user_dict, status_code.OK
 

@@ -2,11 +2,11 @@ from flask import Flask, request
 from flask_restful import Api
 from flask_cors import CORS
 from resources.user_resource import UserResource
-from resources.projects_resource import ProjectsResource
 from resources.project_repos_resource import ProjectReposResource
 from resources.project_setting_resource import ProjectSettingResource
 from resources.projects_resource import ProjectsResource
 from resources.project_code_frequency_resource import ProjectCodeFrequencyResource
+from resources.project_compare_code_frequency_resource import ProjectCompareCodeFrequencyResource
 from resources.repository_resource import RepositoryResource
 from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
@@ -39,9 +39,13 @@ api.add_resource(ProjectReposResource, '/project/<string:pid>/repos')
 api.add_resource(ProjectSettingResource, '/project/<string:pid>/setting')
 api.add_resource(RepositoryResource, '/project/AvailRepository/<string:pid>')
 
-# for project information
+# for code frequency
 api.add_resource(ProjectCodeFrequencyResource,
                  '/project/<string:pid>/code_freq')
+
+api.add_resource(ProjectCompareCodeFrequencyResource, '/project/compare/<string:pid1>/<string:pid2>/code_freq')
+
+# for total commit
 api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
 
 # for commit contribution

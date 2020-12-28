@@ -22,7 +22,7 @@ class LoginResource(Resource):
                 firebaseSingInAPI, data=parameters, headers=header)
 
             resp = json.loads(r.text)
-            print('77', json.dumps(resp))
+
             if 'error' not in resp:
                 # print('66', json.dumps(resp))
                 return {'idToken': resp['idToken'], 'refreshToken': resp['refreshToken']}
