@@ -10,6 +10,7 @@ from resources.project_compare_code_frequency_resource import ProjectCompareCode
 from resources.repository_resource import RepositoryResource
 from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
+from resources.project_compare_commit_resource import ProjectCompareCommitResource
 from resources.project_weekcommit_resource import ProjectWeekCommitResource
 from resources.project_Issue_message_resource import ProjectIssueMessageResource
 from resources.login_resource import LoginResource
@@ -47,6 +48,7 @@ api.add_resource(ProjectCompareCodeFrequencyResource, '/project/compare/<string:
 
 # for total commit
 api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
+api.add_resource(ProjectCompareCommitResource, '/project/compare/<string:pid1>/<string:pid2>/commit')
 
 # for commit contribution
 api.add_resource(ProjectWeekCommitResource,

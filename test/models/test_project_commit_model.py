@@ -151,8 +151,8 @@ class TestProjectCommitModel():
         assert commits.member == expect.member
         assert commits.commit_list == expect.commit_list
 
-    def test_get_project_commit_info(self):
-        res = self.model.get_project_commit_info(constant.TEST_PID)
+    def test_get_project_commit(self):
+        res = self.model.get_project_commit(constant.TEST_PID)
         expect = {
             'commits': {
                 'name' : 'test_name', 
@@ -167,5 +167,34 @@ class TestProjectCommitModel():
                 ]
             }
         }
+        assert res == expect
 
+    def test_get_compare_project_commit(self):
+        res = self.model.get_compare_project_commit(constant.TEST_PID, constant.TEST_PID)
+        expect = {
+            constant.TEST_PID: {
+                'name' : 'test_name', 
+                'member' : ['gougon'], 
+                'commit_list' : [
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/28'
+                    }
+                ]
+            }, 
+            constant.TEST_PID: {
+                'name' : 'test_name', 
+                'member' : ['gougon'], 
+                'commit_list' : [
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/28'
+                    }
+                ]
+            }
+        }
         assert res == expect

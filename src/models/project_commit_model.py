@@ -12,7 +12,18 @@ class ProjectCommitModel():
         self._uid = conn_tool.uid
         self._token = UserModel(conn_tool).get_user_githubToken
 
-    def get_project_commit_info(self, pid):
+    def get_compare_project_commit(self, pid1, pid2):
+        commits1 = self.get_project_commit(pid1)
+        commits2 = self.get_project_commit(pid2)
+
+        msg = {
+            pid1: commits1['commits'], 
+            pid2: commits2['commits']
+        }
+
+        return msg
+
+    def get_project_commit(self, pid):
         project = self._db.collection(
             u'projects').document(pid).get().to_dict()
         commits = self.__get_commits(project)
