@@ -1,11 +1,5 @@
-from flask import jsonify, abort
 from flask_restful import Resource, reqparse
-from common import status_code, error_code
-from common.status_code import is_client_error
-from common.util import is_iter_empty
-from models.user_model import UserModel
-from utilities.github_api_requester import GithubApiRequester
-from models.project_model import ProjectModel
+from common import status_code
 import requests
 import json
 from common.constant import APIKEY
