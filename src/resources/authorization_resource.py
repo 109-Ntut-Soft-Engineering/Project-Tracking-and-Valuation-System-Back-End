@@ -1,9 +1,5 @@
-from flask import jsonify, abort
 from flask_restful import Resource, reqparse
-from common import error_code, status_code
-
 from models.user_model import UserModel
-from flask import request
 
 
 class AuthResource(Resource):

@@ -1,7 +1,5 @@
-from conn_tool import ConnTool
 from entities.user import User
-from common import status_code, error_code
-
+from common import status_code
 import requests
 import json
 import sys

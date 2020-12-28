@@ -1,12 +1,11 @@
 from conn_tool import ConnTool
 from entities.project import Project
 from entities.setting import Setting
-from common import status_code, error_code
 
 import sys
 from flask_restful import abort
+from common import status_code
 from google.cloud import firestore
-import json
 from models.user_model import UserModel
 from utilities.github_api_requester import GithubApiRequester
 from flask.json import jsonify

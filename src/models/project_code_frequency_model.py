@@ -12,6 +12,44 @@ class ProjectCodeFrequencyModel:
         self._userModel = UserModel()
 
     def get_code_freq(self, pid):
+        # 從第三方拿取資料
+        code_freq_series = self.__get_code_freq_from_third(pid)
+        date_code = []
+        for date, code in code_freq_series.items():
+            date_code.append({'date': date, 'code': code})
+
+        date_code = self.__sort_code_freq(date_code)
+        date_code = self.__delete_post_zero(date_code)
+        return date_code
+
+    def get_compare_code_frequency(self, pid1, pid2):
+        pid1_code_freqies = self.get_code_freq(pid1)
+        pid2_code_freqies = self.get_code_freq(pid2)
+
+        compare_code_freies = {}
+        for data in pid1_code_freqies:
+            date = data['date']
+            compare_code_freies[date]= {pid1: data['code'], pid2: 0}
+
+        for data in pid2_code_freqies:
+            date = data['date']
+            if date in compare_code_freies.keys():
+                compare_code_freies[date][pid2] = data['code']
+            else:
+                compare_code_freies[date] = {pid1: 0, pid2: data['code']}
+
+        # redefine the structure
+        date_code = []
+        for date, data in compare_code_freies.items():
+            date_code.append({'date': date, pid1: data[pid1], pid2: data[pid2]})
+
+        print('compare date code:', date_code)
+        return self.__sort_code_freq(date_code)
+
+
+
+
+    def __get_code_freq_from_third(self, pid: str) -> dict:
         project = self.__get_project(pid)
         repositories_id = project['repositories']['Github']
         print('repositories:', repositories_id)
@@ -36,13 +74,7 @@ class ProjectCodeFrequencyModel:
                     code_freq_series[date] = progress
                 else:
                     code_freq_series[date] += progress
-        date_code = []
-        for date, code in code_freq_series.items():
-            date_code.append({'date': date, 'code': code})
-
-        date_code = self.__sort_code_freq(date_code)
-        date_code = self.__delete_post_zero(date_code)
-        return date_code
+        return code_freq_series
 
     def __sort_code_freq(self, code_freq):
         dateFormatter = '%Y/%m/%d'
