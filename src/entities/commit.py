@@ -38,4 +38,15 @@ class Commit():
             dest[u'time'] = self.time
         
         return dest
+
+    def __eq__(self, other):
+        if self.author != other.author:
+            return False
+        if self.message != other.message:
+            return False
+        if self.lines != other.lines:
+            return False
+        if self.time != other.time:
+            return False
+        return True
     

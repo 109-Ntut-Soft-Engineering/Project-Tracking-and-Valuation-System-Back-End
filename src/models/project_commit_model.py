@@ -32,10 +32,11 @@ class ProjectCommitModel():
                 commit_list.append(dest_commit)
 
         commits = self.__build_commits(project[u'name'], commit_list)
-        self.sort_commits_by_time(commits, 'desc')
+        self.__sort_commits_by_time(commits, 'asc')
         return commits
 
     def __transform_commit(self, src_commit):
+        print(src_commit, file=sys.stderr)
         name = src_commit['commit']['author']['name']
         message = src_commit['commit']['message']
         lines = src_commit['stats']['total']
@@ -49,12 +50,12 @@ class ProjectCommitModel():
         commits = Commits(project_name, member, commit_list)
         return commits
 
-    def sort_commits_by_time(self, commit_msgs, sort_type):
-        commit_list = commit_msgs.commit_list
-        if sort_type == 'desc':
+    def __sort_commits_by_time(self, commits, sort_type):
+        commit_list = commits.commit_list
+        if sort_type == 'asc':
             commit_list.sort(key=lambda x:
                              datetime.strptime(x.time, '%Y/%m/%d'), reverse=False)
-        elif sort_type == 'asc':
+        elif sort_type == 'desc':
             commit_list.sort(key=lambda x:
                              datetime.strptime(x.time, '%Y/%m/%d'), reverse=True)
         else:
