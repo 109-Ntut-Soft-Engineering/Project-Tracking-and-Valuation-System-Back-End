@@ -2,7 +2,7 @@ from conn_tool import ConnTool
 from entities.project import Project
 from entities.setting import Setting
 from common import status_code, error_code
-from common.util import is_iter_empty
+
 import sys
 from flask_restful import abort
 from google.cloud import firestore
@@ -99,7 +99,8 @@ class ProjectModel():
         return None, status_code.OK
 
     def __is_project_name_used(self, name):
-        projects = self._db.collection('projects').where('name', '==', name).where('owner', '==', self._uid).get()
+        projects = self._db.collection('projects').where(
+            'name', '==', name).where('owner', '==', self._uid).get()
         for project in projects:
             if project.to_dict()['owner'] == self._uid:
                 return True
