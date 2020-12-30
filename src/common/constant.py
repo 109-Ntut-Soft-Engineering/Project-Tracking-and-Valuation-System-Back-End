@@ -2,4 +2,5 @@ DEL_BATCH_SIZE = 100
 APIKEY = 'AIzaSyBSx_sJAvz0AmmffTDwODGAioXfyqP4Foc'
 TEST_UID = 'KDD0wVZh0Rb6eLFb2KeWBgKMjiH2'
 TEST_GITHUB_TOKEN = '81940d4ba72daceb33cbd771e455ef1676b2a14c'
-TEST_PID = 'testing_id'
+TEST_PID1 = 'testing_id'
+TEST_PID2 = 'testing_id2'
