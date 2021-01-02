@@ -11,6 +11,7 @@ from resources.repository_resource import RepositoryResource
 from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
 from resources.project_weekcommit_resource import ProjectWeekCommitResource
+from resources.project_compare_weekcommit_resource import ProjectCompareWeekCommitResource
 from resources.project_Issue_message_resource import ProjectIssueMessageResource
 from resources.login_resource import LoginResource
 from resources.signup_resource import SignUpResource
@@ -51,6 +52,9 @@ api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
 # for commit contribution
 api.add_resource(ProjectWeekCommitResource,
                  '/project/<string:pid>/week_commit')
+
+api.add_resource(ProjectCompareWeekCommitResource,
+                 '/project/compare/<string:pid1>/<string:pid2>/week_commit')
 
 # for issue message
 api.add_resource(ProjectIssueMessageResource, '/project/<string:pid>/issue')
