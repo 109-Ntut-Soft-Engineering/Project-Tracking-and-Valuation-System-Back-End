@@ -22,15 +22,6 @@ app.config.from_object(config)
 api = Api(app)
 CORS(app)
 
-
-@app.route('/', methods=['GET'])
-def home():
-    for i in range(200):
-        print('i', i)
-
-    return 'test', 200
-
-
 api.add_resource(UserResource, '/user')
 api.add_resource(ProjectsResource, '/projects')
 api.add_resource(AuthResource, '/user/auth')
