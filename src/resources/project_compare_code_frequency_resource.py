@@ -1,7 +1,7 @@
 from models.project_code_frequency_model import ProjectCodeFrequencyModel
 from flask_restful import Resource
 from common import status_code
-from src.conn_tool import ConnTool
+from conn_tool import ConnTool
 
 
 class ProjectCompareCodeFrequencyResource(Resource):
