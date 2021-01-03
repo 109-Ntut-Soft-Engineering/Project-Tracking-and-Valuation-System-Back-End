@@ -1,16 +1,16 @@
 from utilities.github_api_requester import GithubApiRequester
-from conn_tool import ConnTool
 from models.user_model import UserModel
 from datetime import datetime
 import sys
+
 
 class ProjectCodeFrequencyModel:
     def __init__(self, connect_tool):
         self._db = connect_tool.db
         self._uid = connect_tool.uid
-        self._token = UserModel(connect_tool).get_user_githubToken()
+        self._token = UserModel(connect_tool).get_user_githubToken
 
-    def get_code_freq(self, pid):
+    def get_code_freq(self, pid) -> list:
         # 從第三方拿取資料
         code_freq_series = self.__get_code_freq_from_third(pid)
         date_code = []
@@ -21,7 +21,7 @@ class ProjectCodeFrequencyModel:
         date_code = self.__delete_post_zero(date_code)
         return date_code
 
-    def get_compare_code_frequency(self, pid1, pid2):
+    def get_compare_code_frequency(self, pid1, pid2) -> list:
         pid1_code_freqies = self.get_code_freq(pid1)
         pid2_code_freqies = self.get_code_freq(pid2)
 
@@ -50,11 +50,13 @@ class ProjectCodeFrequencyModel:
 
     def __get_code_freq_from_third(self, pid: str) -> dict:
         project = self.__get_project(pid)
+        if project is None:
+            return dict({})
+
         repositories_id = project['repositories']['Github']
         print('repositories:', repositories_id)
-        token = self._token
 
-        requester = GithubApiRequester(token)
+        requester = GithubApiRequester(self._token(project['owner']))
         code_freqies = []
         for id in repositories_id:
             # 用url拿到rp

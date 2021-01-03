@@ -17,7 +17,7 @@ class BaseSetting(TestCase):
         }
         self.id_token = self.get_id_token(self.test_account)
         self.header = {
-            'Authorization': 'Bearer '+self.id_token,
+            'Authorization': 'Bearer '+ self.id_token,
             'Content-Type': 'application/x-www-form-urlencoded'
         }
 

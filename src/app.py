@@ -1,4 +1,5 @@
 import config
+from resources.project_compare_commit_resource import ProjectCompareCommitResource
 from resources.signup_resource import SignUpResource
 from resources.login_resource import LoginResource
 from resources.project_Issue_message_resource import ProjectIssueMessageResource
