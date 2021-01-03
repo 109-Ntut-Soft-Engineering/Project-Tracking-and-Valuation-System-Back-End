@@ -11,11 +11,10 @@ from flask.json import jsonify
 
 
 class ProjectModel():
-    def __init__(self):
-        _conn_tool = ConnTool()
-        self._db = _conn_tool.db
-        self._uid = _conn_tool.uid
-        self._userModel = UserModel(_conn_tool)
+    def __init__(self, conn_tool):
+        self._db = conn_tool.db
+        self._uid = conn_tool.uid
+        self._userModel = UserModel(conn_tool)
 
     def get_project_list(self):
         proj_owner = self._db.collection('projects').where(
@@ -179,9 +178,11 @@ class ProjectModel():
 
             if name != '':
                 project.update(
-                    {'name': name,
-                     'updated': firestore.SERVER_TIMESTAMP
-                     })
+                    {
+                        'name': name,
+                        'updated': firestore.SERVER_TIMESTAMP
+                    }
+                )
                 return None, status_code.OK
             else:
                 return 'name is require', status_code.BAD_REQUEST

@@ -1,11 +1,11 @@
 from flask import jsonify, abort
 from flask_restful import Resource, reqparse
 from models.project_model import ProjectModel
-
+from conn_tool import ConnTool
 
 class ProjectsResource(Resource):
     def __init__(self):
-        self._model = ProjectModel()
+        self._model = ProjectModel(ConnTool())
 
     def get(self):
         data, code = self._model.get_project_list()
