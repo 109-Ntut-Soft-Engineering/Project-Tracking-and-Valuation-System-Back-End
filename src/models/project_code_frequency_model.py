@@ -1,6 +1,7 @@
 from utilities.github_api_requester import GithubApiRequester
 from models.user_model import UserModel
 from datetime import datetime
+from conn_tool import ConnTool
 import sys
 
 
