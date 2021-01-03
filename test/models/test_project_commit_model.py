@@ -1,13 +1,16 @@
+import sys, os.path
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
+
 from test.fake_conn_tool import FakeConnTool
 from src.models.project_commit_model import ProjectCommitModel
 from src.entities.commit import Commit
 from src.entities.commits import Commits
 from src.entities.project import Project
+from src.entities.my_date import MyDate
 from src.common import constant
-import datetime, sys, os.path, pytest
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
-
+from datetime import datetime, timezone
+import pytest
 
 class TestProjectCommitModel():
     @classmethod
@@ -126,44 +129,450 @@ class TestProjectCommitModel():
         assert cm.match('sort type only have "desc" & "asc"')
 
     def test_get_commits(self):
-        project = Project(name='test_name',
-                          owner=constant.TEST_UID,
-                          repositories={'Github': [324982851]},
-                          updated=datetime.datetime(2020, 1, 1,
-                                                    1, 11, 11, 0,
-                                                    tzinfo=datetime.timezone.utc)
-                          ).to_dict()
-
+        project = Project(name='test_name', 
+                        owner=constant.TEST_UID, 
+                        repositories={'Github': [324982851]}, 
+                        updated=datetime(2020, 1, 1, 
+                            1, 11, 11, 0, 
+                            tzinfo=timezone.utc)
+                        ).to_dict()
+        
         commits = self.model._ProjectCommitModel__get_commits(project)
-        expect = Commits(name='test_name',
-                         member=['gougon'],
-                         commit_list=[
-                             Commit(
-                                 author='gougon',
-                                 message='Create README.md',
-                                 lines=2,
-                                 time='2020/12/28'
-                             )
-                         ])
+        expect = Commits(name='test_name', 
+                        member=['gougon'], 
+                        commit_list=[
+                            Commit(
+                                author='gougon', 
+                                message='Create README.md', 
+                                lines=2, 
+                                time='2020/12/28'
+                            ), 
+                            Commit(
+                                author='gougon', 
+                                message='Update README.md', 
+                                lines=1, 
+                                time='2021/01/03'
+                            )
+                        ])
         assert commits.name == expect.name
         assert commits.member == expect.member
         assert commits.commit_list == expect.commit_list
 
-    def test_get_project_commit_info(self):
-        res = self.model.get_project_commit_info(constant.TEST_PID1)
+    def test_get_project_commit(self):
+        res = self.model.get_project_commit(constant.TEST_PID1)
         expect = {
             'commits': {
                 'name': 'test_name',
                 'member': ['gougon'],
                 'commit_list': [
                     {
-                        'author': 'gougon',
-                        'message': 'Create README.md',
-                        'lines': 2,
-                        'time': '2020/12/28'
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/28'
+                    }, 
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Update README.md', 
+                        'lines' : 1, 
+                        'time' : '2021/01/03'
                     }
                 ]
             }
         }
+        assert res == expect
 
+    def test_fill_empty_date_start_date_ealier_than_source(self):
+        cmt_times = [
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }
+        ]
+        start_date = MyDate(year=2020, month=12, day=28)
+        end_date = MyDate(year=2021, month=1, day=3)
+        res = self.model._ProjectCommitModel__fill_empty_date(
+            cmt_times, start_date, end_date)
+        expect = [
+            {
+                'times': 0, 
+                'time': '2020/12/28'
+            }, 
+            {
+                'times': 0, 
+                'time': '2020/12/29'
+            }, 
+            {
+                'times': 0, 
+                'time': '2020/12/30'
+            }, 
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }
+        ]
+        assert res == expect
+
+    def test_fill_empty_date_end_date_later_than_source(self):
+        cmt_times = [
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }
+        ]
+        start_date = MyDate(year=2020, month=12, day=31)
+        end_date = MyDate(year=2021, month=1, day=5)
+        res = self.model._ProjectCommitModel__fill_empty_date(
+            cmt_times, start_date, end_date)
+        expect = [
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/04'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/05'
+            }
+        ]
+        assert res == expect
+
+    def test_fill_empty_date_period_longer_than_source(self):
+        cmt_times = [
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }
+        ]
+        start_date = MyDate(year=2021, month=1, day=1)
+        end_date = MyDate(year=2021, month=1, day=2)
+        res = self.model._ProjectCommitModel__fill_empty_date(
+            cmt_times, start_date, end_date)
+        expect = [
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }
+        ]
+        assert res == expect
+
+    def test_fill_empty_date_period_shorter_than_source(self):
+        cmt_times = [
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }
+        ]
+        start_date = MyDate(year=2020, month=12, day=30)
+        end_date = MyDate(year=2021, month=1, day=4)
+        res = self.model._ProjectCommitModel__fill_empty_date(
+            cmt_times, start_date, end_date)
+        expect = [
+            {
+                'times': 0, 
+                'time': '2020/12/30'
+            }, 
+            {
+                'times': 2, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }, 
+            {
+                'times': 3, 
+                'time': '2021/01/03'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/04'
+            }
+        ]
+        assert res == expect
+
+    def test_get_interval_commit_times(self):
+        start_date = MyDate(date_text='2020/12/30')
+        end_date = MyDate(date_text='2021/01/02')
+        res = self.model._ProjectCommitModel__get_interval_commit_times(
+            start_date, end_date)
+        expect = [
+            {
+                'times': 0, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/01'
+            }
+        ]
+        assert res == expect
+
+    def test_get_interval_commit_times_involve_start(self):
+        start_date = MyDate(date_text='2020/12/30')
+        end_date = MyDate(date_text='2021/01/02')
+        res = self.model._ProjectCommitModel__get_interval_commit_times(
+            start_date, end_date, involve_s=True)
+        expect = [
+            {
+                'times': 0, 
+                'time': '2020/12/30'
+            }, 
+            {
+                'times': 0, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/01'
+            }, 
+        ]
+        assert res == expect
+
+    def test_get_interval_commit_times_involve_end(self):
+        start_date = MyDate(date_text='2020/12/30')
+        end_date = MyDate(date_text='2021/01/02')
+        res = self.model._ProjectCommitModel__get_interval_commit_times(
+            start_date, end_date, involve_e=True)
+        expect = [
+            {
+                'times': 0, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }
+        ]
+        assert res == expect
+
+    def test_get_interval_commit_times_involve_start_and_end(self):
+        start_date = MyDate(date_text='2020/12/30')
+        end_date = MyDate(date_text='2021/01/02')
+        res = self.model._ProjectCommitModel__get_interval_commit_times(
+            start_date, end_date, involve_s=True, involve_e=True)
+        expect = [
+            {
+                'times': 0, 
+                'time': '2020/12/30'
+            },
+            {
+                'times': 0, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/02'
+            }
+        ]
+        assert res == expect
+
+    def test_get_commit_times(self):
+        commits = {
+            'commits': {
+                'name' : 'test_name', 
+                'member' : ['gougon'], 
+                'commit_list' : [
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/28'
+                    }, 
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/29'
+                    }, 
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/29'
+                    }, 
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2020/12/31'
+                    }, 
+                    {
+                        'author' : 'gougon', 
+                        'message' : 'Create README.md', 
+                        'lines' : 2, 
+                        'time' : '2021/01/02'
+                    }
+                ]
+            }
+        }
+        res = self.model._ProjectCommitModel__get_commit_times(commits)
+        expect = [
+            {
+                'times': 1, 
+                'time': '2020/12/28'
+            }, 
+            {
+                'times': 2, 
+                'time': '2020/12/29'
+            }, 
+            {
+                'times': 0, 
+                'time': '2020/12/30'
+            }, 
+            {
+                'times': 1, 
+                'time': '2020/12/31'
+            }, 
+            {
+                'times': 0, 
+                'time': '2021/01/01'
+            }, 
+            {
+                'times': 1, 
+                'time': '2021/01/02'
+            }
+        ]
+        assert res == expect
+
+    def test_get_compare_project_commit(self):
+        res = self.model.get_compare_project_commit(constant.TEST_PID1, constant.TEST_PID1)
+        expect = {
+            'commit_times': [
+                {
+                    'time': '2020/12/28', 
+                    constant.TEST_PID1: 1, 
+                    constant.TEST_PID1: 1
+                }, 
+                {
+                    'time': '2020/12/29', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
+                }, 
+                {
+                    'time': '2020/12/30', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
+                }, 
+                {
+                    'time': '2020/12/31', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
+                }, 
+                {
+                    'time': '2021/01/01', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
+                }, 
+                {
+                    'time': '2021/01/02', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
+                }, 
+                {
+                    'time': '2021/01/03', 
+                    constant.TEST_PID1: 1, 
+                    constant.TEST_PID1: 1
+                }
+            ]
+        }
         assert res == expect

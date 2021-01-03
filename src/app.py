@@ -23,9 +23,9 @@ print(os.getcwd(), file=sys.stderr)
 
 
 app = Flask("soft engineering")
+CORS(app)
 app.config.from_object(config)
 api = Api(app)
-CORS(app)
 
 api.add_resource(UserResource, '/user')
 api.add_resource(ProjectsResource, '/projects')
@@ -45,6 +45,7 @@ api.add_resource(ProjectCompareCodeFrequencyResource,
 
 # for total commit
 api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
+api.add_resource(ProjectCompareCommitResource, '/project/compare/<string:pid1>/<string:pid2>/commit')
 
 # for commit contribution
 api.add_resource(ProjectWeekCommitResource,

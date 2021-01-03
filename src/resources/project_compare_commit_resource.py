@@ -5,10 +5,10 @@ from conn_tool import ConnTool
 import sys
 from common import status_code
 
-class ProjectCommitResource(Resource):
+class ProjectCompareCommitResource(Resource):
     def __init__(self):
         self._model = ProjectCommitModel(ConnTool())
 
-    def get(self, pid):
-        commits = self._model.get_project_commit(pid)
+    def get(self, pid1, pid2):
+        commits = self._model.get_compare_project_commit(pid1, pid2)
         return commits, status_code.OK

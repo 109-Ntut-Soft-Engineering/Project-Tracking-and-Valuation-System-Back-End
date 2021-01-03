@@ -6,8 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 from test.api.base_setting import BaseSetting
 from src.config import BASE
 
-
-
 class TestUserApi(BaseSetting):
     def setUp(self) -> None:
         self.set_auth()

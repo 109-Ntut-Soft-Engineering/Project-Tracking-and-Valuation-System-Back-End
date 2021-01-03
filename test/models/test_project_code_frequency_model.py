@@ -1,11 +1,11 @@
-from test.fake_conn_tool import FakeConnTool
-from src.models.project_code_frequency_model import ProjectCodeFrequencyModel
-from src.common import constant
-from datetime import datetime
 import sys, os.path, unittest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 
+from test.fake_conn_tool import FakeConnTool
+from src.models.project_code_frequency_model import ProjectCodeFrequencyModel
+from src.common import constant
+from datetime import datetime
 
 class TestProjectCodeFrequencyModel(unittest.TestCase):
     def setUp(self):
