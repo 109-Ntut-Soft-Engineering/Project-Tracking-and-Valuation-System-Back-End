@@ -539,20 +539,42 @@ class TestProjectCommitModel():
     def test_get_compare_project_commit(self):
         res = self.model.get_compare_project_commit(constant.TEST_PID, constant.TEST_PID)
         expect = {
-            'date': [
-                '2020/12/28', 
-                '2020/12/29', 
-                '2020/12/30', 
-                '2020/12/31', 
-                '2021/01/01', 
-                '2021/01/02', 
-                '2021/01/03'
-            ], 
-            constant.TEST_PID: [
-                1, 0, 0, 0, 0, 0, 1
-            ], 
-            constant.TEST_PID: [
-                1, 0, 0, 0, 0, 0, 1
+            'commit_times': [
+                {
+                    'time': '2020/12/28', 
+                    constant.TEST_PID: 1, 
+                    constant.TEST_PID: 1
+                }, 
+                {
+                    'time': '2020/12/29', 
+                    constant.TEST_PID: 0, 
+                    constant.TEST_PID: 0
+                }, 
+                {
+                    'time': '2020/12/30', 
+                    constant.TEST_PID: 0, 
+                    constant.TEST_PID: 0
+                }, 
+                {
+                    'time': '2020/12/31', 
+                    constant.TEST_PID: 0, 
+                    constant.TEST_PID: 0
+                }, 
+                {
+                    'time': '2021/01/01', 
+                    constant.TEST_PID: 0, 
+                    constant.TEST_PID: 0
+                }, 
+                {
+                    'time': '2021/01/02', 
+                    constant.TEST_PID: 0, 
+                    constant.TEST_PID: 0
+                }, 
+                {
+                    'time': '2021/01/03', 
+                    constant.TEST_PID: 1, 
+                    constant.TEST_PID: 1
+                }
             ]
         }
         assert res == expect

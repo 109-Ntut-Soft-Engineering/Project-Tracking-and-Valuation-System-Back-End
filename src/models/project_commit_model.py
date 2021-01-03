@@ -17,31 +17,35 @@ class ProjectCommitModel():
         commits1 = self.get_project_commit(pid1)
         commits2 = self.get_project_commit(pid2)
 
-        cmt_times1 = self.__get_commit_times(commits1)
-        cmt_times2 = self.__get_commit_times(commits2)
+        cmt_times1_list = self.__get_commit_times(commits1)
+        cmt_times2_list = self.__get_commit_times(commits2)
 
         start_date = None
         end_date = None
-        if MyDate(date_text=cmt_times1[0]['time']).smaller_than(
-            MyDate(date_text=cmt_times2[0]['time'])):
-            start_date = MyDate(date_text=cmt_times1[0]['time'])
+        if MyDate(date_text=cmt_times1_list[0]['time']).smaller_than(
+            MyDate(date_text=cmt_times2_list[0]['time'])):
+            start_date = MyDate(date_text=cmt_times1_list[0]['time'])
         else:
-            start_date = MyDate(date_text=cmt_times2[0]['time'])
+            start_date = MyDate(date_text=cmt_times2_list[0]['time'])
 
-        if MyDate(date_text=cmt_times1[-1]['time']).smaller_than(
-            MyDate(date_text=cmt_times2[-1]['time'])):
-            end_date = MyDate(date_text=cmt_times2[-1]['time'])
+        if MyDate(date_text=cmt_times1_list[-1]['time']).smaller_than(
+            MyDate(date_text=cmt_times2_list[-1]['time'])):
+            end_date = MyDate(date_text=cmt_times2_list[-1]['time'])
         else:
-            end_date = MyDate(date_text=cmt_times1[-1]['time'])
+            end_date = MyDate(date_text=cmt_times1_list[-1]['time'])
 
-        cmt_times1 = self.__fill_empty_date(cmt_times1, start_date, end_date)
-        cmt_times2 = self.__fill_empty_date(cmt_times2, start_date, end_date)
+        cmt_times1_list = self.__fill_empty_date(cmt_times1_list, start_date, end_date)
+        cmt_times2_list = self.__fill_empty_date(cmt_times2_list, start_date, end_date)
 
-        print(cmt_times1, file=sys.stderr)
+        print(cmt_times1_list, file=sys.stderr)
         msg = {
-            'date': [cmt_times['time'] for cmt_times in cmt_times1], 
-            str(pid1): [cmt_times['times'] for cmt_times in cmt_times1], 
-            str(pid2): [cmt_times['times'] for cmt_times in cmt_times2]
+            'commit_times': [
+                { 'time': cmt_times1['time'], 
+                  str(pid1): cmt_times1['times'], 
+                  str(pid2): cmt_times2['times'] 
+                } for cmt_times1, cmt_times2 in \
+                    zip(cmt_times1_list, cmt_times2_list)
+            ]
         }
 
         return msg
