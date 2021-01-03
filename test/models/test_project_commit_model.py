@@ -534,44 +534,87 @@ class TestProjectCommitModel():
         ]
         assert res == expect
 
-    def test_get_compare_project_commit(self):
-        res = self.model.get_compare_project_commit(constant.TEST_PID1, constant.TEST_PID1)
+    def test_get_compare_project_commit_pid1_period_longer_than_pid2(self):
+        res = self.model.get_compare_project_commit(constant.TEST_PID1, constant.TEST_PID_COMPARE)
         expect = {
             'commit_times': [
                 {
                     'time': '2020/12/28', 
                     constant.TEST_PID1: 1, 
-                    constant.TEST_PID1: 1
+                    constant.TEST_PID_COMPARE: 0
                 }, 
                 {
                     'time': '2020/12/29', 
                     constant.TEST_PID1: 0, 
-                    constant.TEST_PID1: 0
+                    constant.TEST_PID_COMPARE: 3
                 }, 
                 {
                     'time': '2020/12/30', 
                     constant.TEST_PID1: 0, 
-                    constant.TEST_PID1: 0
+                    constant.TEST_PID_COMPARE: 0
                 }, 
                 {
                     'time': '2020/12/31', 
                     constant.TEST_PID1: 0, 
-                    constant.TEST_PID1: 0
+                    constant.TEST_PID_COMPARE: 0
                 }, 
                 {
                     'time': '2021/01/01', 
                     constant.TEST_PID1: 0, 
-                    constant.TEST_PID1: 0
+                    constant.TEST_PID_COMPARE: 0
                 }, 
                 {
                     'time': '2021/01/02', 
                     constant.TEST_PID1: 0, 
-                    constant.TEST_PID1: 0
+                    constant.TEST_PID_COMPARE: 0
                 }, 
                 {
                     'time': '2021/01/03', 
                     constant.TEST_PID1: 1, 
-                    constant.TEST_PID1: 1
+                    constant.TEST_PID_COMPARE: 0
+                }
+            ]
+        }
+        assert res == expect
+
+    def test_get_compare_project_commit_pid1_period_shorter_than_pid2(self):
+        res = self.model.get_compare_project_commit(constant.TEST_PID_COMPARE, constant.TEST_PID1)
+        expect = {
+            'commit_times': [
+                {
+                    'time': '2020/12/28', 
+                    constant.TEST_PID1: 1, 
+                    constant.TEST_PID_COMPARE: 0
+                }, 
+                {
+                    'time': '2020/12/29', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID_COMPARE: 3
+                }, 
+                {
+                    'time': '2020/12/30', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID_COMPARE: 0
+                }, 
+                {
+                    'time': '2020/12/31', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID_COMPARE: 0
+                }, 
+                {
+                    'time': '2021/01/01', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID_COMPARE: 0
+                }, 
+                {
+                    'time': '2021/01/02', 
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID_COMPARE: 0
+                }, 
+                {
+                    'time': '2021/01/03', 
+                    constant.TEST_PID1: 1, 
+                    constant.TEST_PID_COMPARE: 0
                 }
             ]
         }

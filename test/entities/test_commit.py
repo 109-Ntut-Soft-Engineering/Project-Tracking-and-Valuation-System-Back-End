@@ -40,4 +40,31 @@ class TestCommit():
             'time' : '2020/01/01'
         }
         assert dest == expect
+
+    def test_eq(self):
+        commit_wa = Commit(author='author2', 
+                        message='message', 
+                        lines='100', 
+                        time='2020/01/01')
+        commit_wm = Commit(author='author', 
+                        message='message2', 
+                        lines='100', 
+                        time='2020/01/01')
+        commit_wl = Commit(author='author', 
+                        message='message', 
+                        lines='101', 
+                        time='2020/01/01')
+        commit_wt = Commit(author='author', 
+                        message='message', 
+                        lines='100', 
+                        time='2020/01/02')
+        commit = Commit(author='author', 
+                        message='message', 
+                        lines='100', 
+                        time='2020/01/01')
+        assert self.commit == commit
+        assert self.commit != commit_wa
+        assert self.commit != commit_wl
+        assert self.commit != commit_wm
+        assert self.commit != commit_wt
     
