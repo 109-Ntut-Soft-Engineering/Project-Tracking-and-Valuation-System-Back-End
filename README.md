@@ -76,3 +76,11 @@
     * 取得與pid相符的project的code frequency資訊
     * paras:
         * pid: str, project的id
+        
+## Project Compare Code Frequency Resource
+* path: /project/compare/{pid1}/{pid2}/code_freq, method: GET
+    * 取得pid1和pid2的compare code frequency資訊
+    * paras:
+        * pid1: str, project1的id,
+        * pid2: str, project2的id,
+        

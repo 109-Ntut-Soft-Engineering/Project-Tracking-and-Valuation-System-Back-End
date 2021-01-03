@@ -12,6 +12,7 @@ from resources.authorization_resource import AuthResource
 from resources.project_commit_resource import ProjectCommitResource
 from resources.project_compare_commit_resource import ProjectCompareCommitResource
 from resources.project_weekcommit_resource import ProjectWeekCommitResource
+from resources.project_compare_weekcommit_resource import ProjectCompareWeekCommitResource
 from resources.project_Issue_message_resource import ProjectIssueMessageResource
 from resources.login_resource import LoginResource
 from resources.signup_resource import SignUpResource
@@ -24,15 +25,6 @@ app = Flask("soft engineering")
 CORS(app)
 app.config.from_object(config)
 api = Api(app)
-
-
-@app.route('/', methods=['GET'])
-def home():
-    for i in range(200):
-        print('i', i)
-
-    return 'test', 200
-
 
 api.add_resource(UserResource, '/user')
 api.add_resource(ProjectsResource, '/projects')
@@ -56,6 +48,9 @@ api.add_resource(ProjectCompareCommitResource, '/project/compare/<string:pid1>/<
 # for commit contribution
 api.add_resource(ProjectWeekCommitResource,
                  '/project/<string:pid>/week_commit')
+
+api.add_resource(ProjectCompareWeekCommitResource,
+                 '/project/compare/<string:pid1>/<string:pid2>/week_commit')
 
 # for issue message
 api.add_resource(ProjectIssueMessageResource, '/project/<string:pid>/issue')

@@ -5,11 +5,10 @@ from datetime import datetime
 import sys
 
 class ProjectCodeFrequencyModel:
-    def __init__(self):
-        _conn_tool = ConnTool()
-        self._db = _conn_tool.db
-        self._uid = _conn_tool.uid
-        self._userModel = UserModel(_conn_tool)
+    def __init__(self, connect_tool):
+        self._db = connect_tool.db
+        self._uid = connect_tool.uid
+        self._token = UserModel(connect_tool).get_user_githubToken()
 
     def get_code_freq(self, pid):
         # 從第三方拿取資料
@@ -53,8 +52,7 @@ class ProjectCodeFrequencyModel:
         project = self.__get_project(pid)
         repositories_id = project['repositories']['Github']
         print('repositories:', repositories_id)
-
-        token = self._userModel.get_user_githubToken()
+        token = self._token
 
         requester = GithubApiRequester(token)
         code_freqies = []
@@ -85,9 +83,8 @@ class ProjectCodeFrequencyModel:
 
     def __delete_post_zero(self, code_freq):
         for i in range(len(code_freq)-1, 0, -1):
-            print("code[i]:", code_freq[i]['code'])
             if code_freq[i]['code'] != 0:
-                return code_freq[0:i]
+                return code_freq[0:i+1]
         return code_freq[0:]
 
     def __get_project(self, pid):

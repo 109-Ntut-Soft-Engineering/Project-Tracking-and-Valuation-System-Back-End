@@ -36,8 +36,27 @@ class ProjectWeekCommitModel():
             for commit_info in repo_commits['commit_info']:
                 self.__calculate_commit_times(
                     all_repo_week_commit['commit_info'], commit_info)
-        print(all_repo_week_commit)
+        #print(all_repo_week_commit)
         return all_repo_week_commit
+
+    def get_compare_week_commit(self, pid1, pid2):
+        commit1 = self.get_weekcommit(pid1)
+        commit1_info = {'pid' : pid1, 'commit' : commit1['commit_info']}
+        commit2 = self.get_weekcommit(pid2)
+        commit2_info = {'pid' : pid2, 'commit' : commit2['commit_info']}
+
+        max = lambda m, n: m if m >= n else n
+        min = lambda m, n: m if m <= n else n
+        new_start_time = max(commit1['start_time'], commit2['start_time'])
+        new_end_time = max(commit1['end_time'], commit2['end_time'])
+        commit_info_list = [commit1_info, commit2_info]
+        compare_repo_week_commit = dict({
+            'commit_info' : commit_info_list,
+            'start_time' : new_start_time,
+            'end_time' : new_end_time
+        })
+        return compare_repo_week_commit
+
 
     def __create_repo_week_dict(self):
         week_dict = {}

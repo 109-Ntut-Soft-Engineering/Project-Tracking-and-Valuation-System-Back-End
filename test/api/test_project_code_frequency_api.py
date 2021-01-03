@@ -1,9 +1,7 @@
-import sys
-import os.path
+import sys, os.path
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 
-
-from src.app import app
 from src.config import BASE
 from test.api.base_setting import BaseSetting
 

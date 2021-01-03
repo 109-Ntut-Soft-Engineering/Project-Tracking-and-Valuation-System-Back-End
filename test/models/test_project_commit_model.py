@@ -1,8 +1,7 @@
-import sys
-import os.path
+import sys, os.path
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 
-import pytest
 from test.fake_conn_tool import FakeConnTool
 from src.models.project_commit_model import ProjectCommitModel
 from src.entities.commit import Commit
@@ -11,6 +10,7 @@ from src.entities.project import Project
 from src.entities.my_date import MyDate
 from src.common import constant
 from datetime import datetime, timezone
+import pytest
 
 class TestProjectCommitModel():
     @classmethod
@@ -20,33 +20,33 @@ class TestProjectCommitModel():
     def test_constructor(self):
         assert self.model._db != None
         assert self.model._uid == constant.TEST_UID
-        
+
     def test_transform_commit(self):
         src_commit = {
             'author': {
-                'name': None, 
+                'name': None,
                 'email': None
-            }, 
+            },
             'commit': {
                 'author': {
                     'name': 'name',
-                    'email': 'abc@gmail.com', 
+                    'email': 'abc@gmail.com',
                     'date': '2020/01/01, 01:11:11'
-                }, 
-                'message': 'message', 
-                'html_url': 'https://a/b', 
+                },
+                'message': 'message',
+                'html_url': 'https://a/b',
                 'url': 'https://b/a'
-            }, 
+            },
             'stats': {
-                'additions': 1, 
-                'deletions': 30, 
+                'additions': 1,
+                'deletions': 30,
                 'total': 31
             }
         }
         dest_commit = self.model._ProjectCommitModel__transform_commit(src_commit)
-        expect = Commit(author='name', 
-                        message='message', 
-                        lines=31, 
+        expect = Commit(author='name',
+                        message='message',
+                        lines=31,
                         time='2020/01/01')
         assert dest_commit.author == expect.author
         assert dest_commit.message == expect.message
@@ -55,14 +55,14 @@ class TestProjectCommitModel():
 
     def test_build_commits(self):
         pro_name = 'pname'
-        commit1 = Commit(author='name1', 
-                        message='message1', 
-                        lines=31, 
-                        time='2020/01/01')
-        commit2 = Commit(author='name2', 
-                        message='message2', 
-                        lines=32, 
-                        time='2020/01/02')
+        commit1 = Commit(author='name1',
+                         message='message1',
+                         lines=31,
+                         time='2020/01/01')
+        commit2 = Commit(author='name2',
+                         message='message2',
+                         lines=32,
+                         time='2020/01/02')
         cmt_list = [commit1, commit2]
         dest_cmts = self.model._ProjectCommitModel__build_commits(pro_name, cmt_list)
         expect = Commits(pro_name, ['name1', 'name2'], cmt_list)
@@ -72,18 +72,18 @@ class TestProjectCommitModel():
         assert dest_cmts.commit_list == expect.commit_list
 
     def test_sort_commits_by_time_desc(self):
-        commit1 = Commit(author='name1', 
-                        message='message1', 
-                        lines=31, 
-                        time='2020/01/01')
-        commit2 = Commit(author='name2', 
-                        message='message2', 
-                        lines=32, 
-                        time='2020/01/02')
-        commit3 = Commit(author='name3', 
-                        message='message3', 
-                        lines=34, 
-                        time='2020/01/03')
+        commit1 = Commit(author='name1',
+                         message='message1',
+                         lines=31,
+                         time='2020/01/01')
+        commit2 = Commit(author='name2',
+                         message='message2',
+                         lines=32,
+                         time='2020/01/02')
+        commit3 = Commit(author='name3',
+                         message='message3',
+                         lines=34,
+                         time='2020/01/03')
 
         commits = Commits('pname', ['name2', 'name3', 'name1'], [commit2, commit3, commit1])
         self.model._ProjectCommitModel__sort_commits_by_time(commits, 'desc')
@@ -91,18 +91,18 @@ class TestProjectCommitModel():
         assert commits.commit_list == expect.commit_list
 
     def test_sort_commits_by_time_asc(self):
-        commit1 = Commit(author='name1', 
-                        message='message1', 
-                        lines=31, 
-                        time='2020/01/01')
-        commit2 = Commit(author='name2', 
-                        message='message2', 
-                        lines=32, 
-                        time='2020/01/02')
-        commit3 = Commit(author='name3', 
-                        message='message3', 
-                        lines=34, 
-                        time='2020/01/03')
+        commit1 = Commit(author='name1',
+                         message='message1',
+                         lines=31,
+                         time='2020/01/01')
+        commit2 = Commit(author='name2',
+                         message='message2',
+                         lines=32,
+                         time='2020/01/02')
+        commit3 = Commit(author='name3',
+                         message='message3',
+                         lines=34,
+                         time='2020/01/03')
 
         commits = Commits('pname', ['name2', 'name3', 'name1'], [commit2, commit3, commit1])
         self.model._ProjectCommitModel__sort_commits_by_time(commits, 'asc')
@@ -110,18 +110,18 @@ class TestProjectCommitModel():
         assert commits.commit_list == expect.commit_list
 
     def test_sort_commits_by_time_error(self):
-        commit1 = Commit(author='name1', 
-                        message='message1', 
-                        lines=31, 
-                        time='2020/01/01')
-        commit2 = Commit(author='name2', 
-                        message='message2', 
-                        lines=32, 
-                        time='2020/01/02')
-        commit3 = Commit(author='name3', 
-                        message='message3', 
-                        lines=34, 
-                        time='2020/01/03')
+        commit1 = Commit(author='name1',
+                         message='message1',
+                         lines=31,
+                         time='2020/01/01')
+        commit2 = Commit(author='name2',
+                         message='message2',
+                         lines=32,
+                         time='2020/01/02')
+        commit3 = Commit(author='name3',
+                         message='message3',
+                         lines=34,
+                         time='2020/01/03')
 
         commits = Commits('pname', ['name2', 'name3', 'name1'], [commit2, commit3, commit1])
         with pytest.raises(SystemExit) as cm:
@@ -159,12 +159,12 @@ class TestProjectCommitModel():
         assert commits.commit_list == expect.commit_list
 
     def test_get_project_commit(self):
-        res = self.model.get_project_commit(constant.TEST_PID)
+        res = self.model.get_project_commit(constant.TEST_PID1)
         expect = {
             'commits': {
-                'name' : 'test_name', 
-                'member' : ['gougon'], 
-                'commit_list' : [
+                'name': 'test_name',
+                'member': ['gougon'],
+                'commit_list': [
                     {
                         'author' : 'gougon', 
                         'message' : 'Create README.md', 
@@ -289,7 +289,6 @@ class TestProjectCommitModel():
         assert res == expect
 
     def test_fill_empty_date_period_longer_than_source(self):
-        print('iiiiiiiiiiii', file=sys.stderr)
         cmt_times = [
             {
                 'times': 2, 
@@ -331,7 +330,6 @@ class TestProjectCommitModel():
             }
         ]
         assert res == expect
-        print('oooooooooooo', file=sys.stderr)
 
     def test_fill_empty_date_period_shorter_than_source(self):
         cmt_times = [
@@ -537,43 +535,43 @@ class TestProjectCommitModel():
         assert res == expect
 
     def test_get_compare_project_commit(self):
-        res = self.model.get_compare_project_commit(constant.TEST_PID, constant.TEST_PID)
+        res = self.model.get_compare_project_commit(constant.TEST_PID1, constant.TEST_PID1)
         expect = {
             'commit_times': [
                 {
                     'time': '2020/12/28', 
-                    constant.TEST_PID: 1, 
-                    constant.TEST_PID: 1
+                    constant.TEST_PID1: 1, 
+                    constant.TEST_PID1: 1
                 }, 
                 {
                     'time': '2020/12/29', 
-                    constant.TEST_PID: 0, 
-                    constant.TEST_PID: 0
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
                 }, 
                 {
                     'time': '2020/12/30', 
-                    constant.TEST_PID: 0, 
-                    constant.TEST_PID: 0
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
                 }, 
                 {
                     'time': '2020/12/31', 
-                    constant.TEST_PID: 0, 
-                    constant.TEST_PID: 0
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
                 }, 
                 {
                     'time': '2021/01/01', 
-                    constant.TEST_PID: 0, 
-                    constant.TEST_PID: 0
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
                 }, 
                 {
                     'time': '2021/01/02', 
-                    constant.TEST_PID: 0, 
-                    constant.TEST_PID: 0
+                    constant.TEST_PID1: 0, 
+                    constant.TEST_PID1: 0
                 }, 
                 {
                     'time': '2021/01/03', 
-                    constant.TEST_PID: 1, 
-                    constant.TEST_PID: 1
+                    constant.TEST_PID1: 1, 
+                    constant.TEST_PID1: 1
                 }
             ]
         }

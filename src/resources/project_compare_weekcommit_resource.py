@@ -1,16 +1,15 @@
-from models.project_code_frequency_model import ProjectCodeFrequencyModel
+from models.project_weekcommit_model import ProjectWeekCommitModel
 from flask_restful import Resource
 from common import status_code
-from src.conn_tool import ConnTool
 
 
-class ProjectCompareCodeFrequencyResource(Resource):
+class ProjectCompareWeekCommitResource(Resource):
     def __init__(self):
-        self._model = ProjectCodeFrequencyModel(ConnTool)
+        self._model = ProjectWeekCommitModel()
 
     def get(self, pid1, pid2):
         # try:
         #     return {"code_freq": self._model.get_compare_code_frequency(pid1, pid2)}, status_code.OK
         # except TypeError:
         #     return {'message': 'cant find data of pid:{} and pid:{}code frequency'.format(pid1, pid2)}, 404
-        return {"code_freq": self._model.get_compare_code_frequency(pid1, pid2)}, status_code.OK
+        return {"week_commit": self._model.get_compare_week_commit(pid1, pid2)}, status_code.OK
