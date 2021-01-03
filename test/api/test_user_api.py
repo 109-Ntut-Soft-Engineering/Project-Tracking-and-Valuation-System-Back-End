@@ -5,10 +5,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 
 from test.api.base_setting import BaseSetting
 from src.config import BASE
-from common import constant
 
 
-class TestCodeFrequencyApi(BaseSetting):
+class TestUserApi(BaseSetting):
     def setUp(self) -> None:
         self.set_auth()
         self.test_pid = 'Qb2783tRIxZeGKZYrVDh'
@@ -32,4 +31,3 @@ class TestCodeFrequencyApi(BaseSetting):
         api = self.get_code_freq_api(not_exsit_pid)
         res = self.client.get(api, headers=self.header)
         self.assert_404(res)
-        

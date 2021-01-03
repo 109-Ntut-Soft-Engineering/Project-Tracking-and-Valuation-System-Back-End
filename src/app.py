@@ -1,25 +1,27 @@
-from flask import Flask, request
-from flask_restful import Api
-from flask_cors import CORS
-from resources.user_resource import UserResource
-from resources.project_repos_resource import ProjectReposResource
-from resources.project_setting_resource import ProjectSettingResource
-from resources.projects_resource import ProjectsResource
-from resources.project_code_frequency_resource import ProjectCodeFrequencyResource
-from resources.project_compare_code_frequency_resource import ProjectCompareCodeFrequencyResource
-from resources.repository_resource import RepositoryResource
-from resources.authorization_resource import AuthResource
-from resources.project_commit_resource import ProjectCommitResource
-from resources.project_compare_commit_resource import ProjectCompareCommitResource
-from resources.project_weekcommit_resource import ProjectWeekCommitResource
-from resources.project_compare_weekcommit_resource import ProjectCompareWeekCommitResource
-from resources.project_Issue_message_resource import ProjectIssueMessageResource
-from resources.login_resource import LoginResource
-from resources.signup_resource import SignUpResource
 import config
-import os, sys
+from resources.project_compare_commit_resource import ProjectCompareCommitResource
+from resources.signup_resource import SignUpResource
+from resources.login_resource import LoginResource
+from resources.project_Issue_message_resource import ProjectIssueMessageResource
+from resources.project_compare_weekcommit_resource import ProjectCompareWeekCommitResource
+from resources.project_weekcommit_resource import ProjectWeekCommitResource
+from resources.project_commit_resource import ProjectCommitResource
+from resources.authorization_resource import AuthResource
+from resources.repository_resource import RepositoryResource
+from resources.project_compare_code_frequency_resource import ProjectCompareCodeFrequencyResource
+from resources.project_code_frequency_resource import ProjectCodeFrequencyResource
+from resources.projects_resource import ProjectsResource
+from resources.project_setting_resource import ProjectSettingResource
+from resources.project_repos_resource import ProjectReposResource
+from resources.user_resource import UserResource
+from flask_cors import CORS
+from flask_restful import Api
+from flask import Flask, request
+import os
+import sys
 print('app path = ', file=sys.stderr)
 print(os.getcwd(), file=sys.stderr)
+
 
 app = Flask("soft engineering")
 CORS(app)
@@ -39,7 +41,8 @@ api.add_resource(RepositoryResource, '/project/AvailRepository/<string:pid>')
 api.add_resource(ProjectCodeFrequencyResource,
                  '/project/<string:pid>/code_freq')
 
-api.add_resource(ProjectCompareCodeFrequencyResource, '/project/compare/<string:pid1>/<string:pid2>/code_freq')
+api.add_resource(ProjectCompareCodeFrequencyResource,
+                 '/project/compare/<string:pid1>/<string:pid2>/code_freq')
 
 # for total commit
 api.add_resource(ProjectCommitResource, '/project/<string:pid>/commit')
