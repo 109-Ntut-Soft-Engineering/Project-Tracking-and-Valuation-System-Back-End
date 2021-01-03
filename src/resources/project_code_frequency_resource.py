@@ -9,7 +9,5 @@ class ProjectCodeFrequencyResource(Resource):
         self._model = ProjectCodeFrequencyModel(ConnTool())
 
     def get(self, pid):
-        try:
-            return {"code_freq": self._model.get_code_freq(pid)}, status_code.OK
-        except TypeError:
-            return {'message': 'cant find pid:{} code frequency'.format(pid)}, 404
+        return {"code_freq": self._model.get_code_freq(pid)}, status_code.OK
+

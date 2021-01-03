@@ -28,7 +28,7 @@ class ProjectCodeFrequencyModel:
         compare_code_freies = {}
         for data in pid1_code_freqies:
             date = data['date']
-            compare_code_freies[date]= {pid1: data['code'], pid2: 0}
+            compare_code_freies[date] = {pid1: data['code'], pid2: 0}
 
         for data in pid2_code_freqies:
             date = data['date']
@@ -45,9 +45,6 @@ class ProjectCodeFrequencyModel:
         print('compare date code:', date_code)
         return self.__sort_code_freq(date_code)
 
-
-
-
     def __get_code_freq_from_third(self, pid: str) -> dict:
         project = self.__get_project(pid)
         if project is None:
@@ -62,7 +59,6 @@ class ProjectCodeFrequencyModel:
             # 用url拿到rp
             print('id:', id, file=sys.stderr)
             rp = requester.get_rp_by_id(id)
-            print(rp, file=sys.stderr)
             code_freq = requester.get_code_freq(rp)
             code_freqies.append(code_freq)
 
@@ -80,7 +76,6 @@ class ProjectCodeFrequencyModel:
     def __sort_code_freq(self, code_freq):
         dateFormatter = '%Y/%m/%d'
         code_freq = sorted(code_freq, key=lambda data: datetime.strptime(data['date'], dateFormatter))
-        print("sorted", code_freq)
         return code_freq
 
     def __delete_post_zero(self, code_freq):
@@ -92,10 +87,6 @@ class ProjectCodeFrequencyModel:
     def __get_project(self, pid):
         project = self._db.collection(
             u'projects').document(pid).get().to_dict()
-
         return project
-
-    def __get_unique(self, collection):
-        return next(collection.stream())
 
 

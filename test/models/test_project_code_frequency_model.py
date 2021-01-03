@@ -52,6 +52,17 @@ class TestProjectCodeFrequencyModel(unittest.TestCase):
             next_time = datetime.strptime(sorted_code_freq[i+1]['date'], FORMAT)
             assert current_time < next_time
 
+    def test_get_code_freq_from_third(self):
+        # test not exist pid
+        not_exist = "aefawimg"
+        res = self.model._ProjectCodeFrequencyModel__get_code_freq_from_third(not_exist)
+        self.assertTrue(res == {})
+
+        # test exsit pid
+        from common import constant
+        res = self.model._ProjectCodeFrequencyModel__get_code_freq_from_third(constant.TEST_PID1)
+        self.assertTrue(len(res) > 0)
+
     def test__delete_post_zero(self):
         assert len(self.test2_code_freq) == 5
         non_post_zero = self.model._ProjectCodeFrequencyModel__delete_post_zero(self.test1_code_freq)
@@ -60,3 +71,12 @@ class TestProjectCodeFrequencyModel(unittest.TestCase):
         assert len(self.test2_code_freq) == 5
         non_post_zero = self.model._ProjectCodeFrequencyModel__delete_post_zero(self.test2_code_freq)
         assert len(non_post_zero) == 4
+
+        # test last value not zero list:
+        last_not_zero = [
+            {"date": "2020/5/10", "code": 55}, {"date": "2020/6/10", "code": 15},
+            {"date": "2020/8/10", "code": 52}, {"date": "2020/7/10", "code": 10},
+            {"date": "2020/9/10", "code": 10}
+        ]
+        non_post_zero = self.model._ProjectCodeFrequencyModel__delete_post_zero(last_not_zero)
+        assert len(non_post_zero) == 5
