@@ -16,11 +16,14 @@ from resources.project_Issue_message_resource import ProjectIssueMessageResource
 from resources.login_resource import LoginResource
 from resources.signup_resource import SignUpResource
 import config
+import os, sys
+print('app path = ', file=sys.stderr)
+print(os.getcwd(), file=sys.stderr)
 
 app = Flask("soft engineering")
+CORS(app)
 app.config.from_object(config)
 api = Api(app)
-CORS(app)
 
 
 @app.route('/', methods=['GET'])

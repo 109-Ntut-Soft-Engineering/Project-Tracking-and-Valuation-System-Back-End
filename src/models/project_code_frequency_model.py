@@ -2,7 +2,7 @@ from utilities.github_api_requester import GithubApiRequester
 from conn_tool import ConnTool
 from models.user_model import UserModel
 from datetime import datetime
-
+import sys
 
 class ProjectCodeFrequencyModel:
     def __init__(self):
@@ -60,8 +60,9 @@ class ProjectCodeFrequencyModel:
         code_freqies = []
         for id in repositories_id:
             # 用url拿到rp
-            print('id:', id)
+            print('id:', id, file=sys.stderr)
             rp = requester.get_rp_by_id(id)
+            print(rp, file=sys.stderr)
             code_freq = requester.get_code_freq(rp)
             code_freqies.append(code_freq)
 

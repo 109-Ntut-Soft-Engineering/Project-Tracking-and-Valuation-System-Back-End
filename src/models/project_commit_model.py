@@ -1,7 +1,8 @@
 from utilities.github_api_requester import GithubApiRequester
 from entities.commit import Commit
 from entities.commits import Commits
-from datetime import datetime
+from entities.my_date import MyDate
+from datetime import datetime, timedelta
 from models.user_model import UserModel
 import sys
 
@@ -16,12 +17,89 @@ class ProjectCommitModel():
         commits1 = self.get_project_commit(pid1)
         commits2 = self.get_project_commit(pid2)
 
+        cmt_times1 = self.__get_commit_times(commits1)
+        cmt_times2 = self.__get_commit_times(commits2)
+
+        start_date = None
+        end_date = None
+        if MyDate(date_text=cmt_times1[0]['time']).smaller_than(
+            MyDate(date_text=cmt_times2[0]['time'])):
+            start_date = MyDate(date_text=cmt_times1[0]['time'])
+        else:
+            start_date = MyDate(date_text=cmt_times2[0]['time'])
+
+        if MyDate(date_text=cmt_times1[-1]['time']).smaller_than(
+            MyDate(date_text=cmt_times2[-1]['time'])):
+            end_date = MyDate(date_text=cmt_times2[-1]['time'])
+        else:
+            end_date = MyDate(date_text=cmt_times1[-1]['time'])
+
+        cmt_times1 = self.__fill_empty_date(cmt_times1, start_date, end_date)
+        cmt_times2 = self.__fill_empty_date(cmt_times2, start_date, end_date)
+
+        print(cmt_times1, file=sys.stderr)
         msg = {
-            pid1: commits1['commits'], 
-            pid2: commits2['commits']
+            'date': [cmt_times['time'] for cmt_times in cmt_times1], 
+            str(pid1): [cmt_times['times'] for cmt_times in cmt_times1], 
+            str(pid2): [cmt_times['times'] for cmt_times in cmt_times2]
         }
 
         return msg
+
+    def __get_commit_times(self, commits):
+        print(commits, file=sys.stderr)
+        commits = commits['commits']['commit_list']
+        cmt_times_list = []
+        cmt_times = {
+            'times': 1, 
+            'time': commits[0]['time']
+        }
+        cmt_times_list.append(cmt_times)
+        for idx in range(1, len(commits)):
+            if commits[idx]['time'] == cmt_times_list[-1]['time']:
+                cmt_times_list[-1]['times'] += 1
+            else:
+                cmt_times = {
+                    'times': 1, 
+                    'time': commits[idx]['time']
+                }
+                start_date = MyDate(date_text=cmt_times_list[-1]['time'])
+                end_date = MyDate(date_text=cmt_times['time'])
+                interval_dates = self.__get_interval_commit_times(start_date, end_date)
+                cmt_times_list += interval_dates
+                cmt_times_list.append(cmt_times)
+        return cmt_times_list
+
+    def __get_interval_commit_times(self, start_date, end_date, involve_s=False, involve_e=False):
+        interval_dates = []
+        if not involve_s:
+            start_date.next_day()
+        while start_date.smaller_than(end_date):
+            interval_dates.append({
+                'times': 0, 
+                'time': start_date.date_text
+            })
+            start_date.next_day()
+        if involve_e:
+            interval_dates.append({
+                'times': 0, 
+                'time': end_date.date_text
+            })
+        return interval_dates
+
+    def __fill_empty_date(self, cmt_times, start_date, end_date):
+        print('a', file=sys.stderr)
+        if start_date.smaller_than(MyDate(date_text=cmt_times[0]['time'])):
+            print('b', file=sys.stderr)
+            begin_dates = (self.__get_interval_commit_times(
+                start_date, MyDate(date_text=cmt_times[0]['time']), involve_s=True))
+            cmt_times = begin_dates + cmt_times
+        if MyDate(date_text=cmt_times[-1]['time']).smaller_than(end_date):
+            print('c', file=sys.stderr)
+            end_dates = self.__get_interval_commit_times(
+                MyDate(date_text=cmt_times[-1]['time']), end_date, involve_e=True)
+            cmt_times = cmt_times + end_dates
+        return cmt_times
 
     def get_project_commit(self, pid):
         project = self._db.collection(
@@ -35,9 +113,14 @@ class ProjectCommitModel():
         requester = GithubApiRequester(self._token(project['owner']))
 
         commit_list = []
+        print('before loop', file=sys.stderr)
+        print(repositories, file=sys.stderr)
         for repository in repositories:
-            src_commits = requester.get_commits(
-                requester.get_rp_by_id(repository))
+            print('in loop', file=sys.stderr)
+            print(repository, file=sys.stderr)
+            rp = requester.get_rp_by_id(repository)
+            print(rp, file=sys.stderr)
+            src_commits = requester.get_commits(rp)
             for src_commit in src_commits:
                 dest_commit = self.__transform_commit(src_commit)
                 commit_list.append(dest_commit)
