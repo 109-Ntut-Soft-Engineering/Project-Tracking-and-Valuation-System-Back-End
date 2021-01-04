@@ -1,11 +1,13 @@
 from utilities.github_api_requester import GithubApiRequester
 from models.user_model import UserModel
 from datetime import datetime
+from conn_tool import ConnTool
 import sys
 
 
 class ProjectCodeFrequencyModel:
-    def __init__(self, connect_tool):
+    def __init__(self):
+        connect_tool = ConnTool()
         self._db = connect_tool.db
         self._uid = connect_tool.uid
         self._token = UserModel(connect_tool).get_user_githubToken
