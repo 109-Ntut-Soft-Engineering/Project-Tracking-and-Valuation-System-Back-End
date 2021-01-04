@@ -1,36 +1,35 @@
-import sys
-import os.path
-
+import sys, os.path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 
 from test.api.base_setting import BaseSetting
 from src.config import BASE
 from common import constant
+import json
 
-
-class TestCodeFrequencyApi(BaseSetting):
+class TestIssueMessageApi(BaseSetting):
     def setUp(self) -> None:
         self.set_auth()
-        self.test_pid = 'Qb2783tRIxZeGKZYrVDh'
+        self.test_pid1 = constant.TEST_PID1
+        self.test_pid2 = constant.TEST_PID2
 
-    def get_code_freq_api(self, pid):
-        return BASE + 'project/{}/code_freq'.format(pid)
+    def __get_issue(self, pid):
+        return BASE + 'project/{}/issue'.format(pid)
 
-    def test_code_frequency_api(self):
+    # Test single weekcommit
+    def test_week_commit_api(self):
         # query without auth
-        api = self.get_code_freq_api(self.test_pid)
+        api = self.__get_issue(self.test_pid1)
         res = self.client.get(api)
         self.assert_401(res)
 
         # query exist pid code frequency (normal situation)
-        api = self.get_code_freq_api(self.test_pid)
         res = self.client.get(api, headers=self.header)
         self.assert_200(res)
 
         # query not exist pid code frequency
-        not_exsit_pid = 'tsakna2lknc'
-        api = self.get_code_freq_api(not_exsit_pid)
+        not_exsit_pid1 = 'tsakna2lknc'
+        api = self.__get_issue(not_exsit_pid1)
         res = self.client.get(api, headers=self.header)
-        # still get 200, but without any content
-        self.assert200(res)
-        
+        data = json.loads(res.data.decode())
+        self.assert_200(res)
+        self.assertTrue(data['issues'] == {})

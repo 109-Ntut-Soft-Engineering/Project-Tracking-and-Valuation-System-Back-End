@@ -6,7 +6,7 @@ from conn_tool import ConnTool
 
 class ProjectCompareCodeFrequencyResource(Resource):
     def __init__(self):
-        self._model = ProjectCodeFrequencyModel()
+        self._model = ProjectCodeFrequencyModel(ConnTool())
 
     def get(self, pid1, pid2):
         return {"code_freq": self._model.get_compare_code_frequency(pid1, pid2)}, status_code.OK

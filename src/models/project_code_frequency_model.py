@@ -6,11 +6,10 @@ import sys
 
 
 class ProjectCodeFrequencyModel:
-    def __init__(self):
-        connect_tool = ConnTool()
-        self._db = connect_tool.db
-        self._uid = connect_tool.uid
-        self._token = UserModel(connect_tool).get_user_githubToken
+    def __init__(self, conn_tool):
+        self._db = conn_tool.db
+        self._uid = conn_tool.uid
+        self._token = UserModel(conn_tool).get_user_githubToken
 
     def get_code_freq(self, pid) -> list:
         # 從第三方拿取資料

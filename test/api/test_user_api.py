@@ -15,7 +15,7 @@ class TestUserApi(BaseSetting):
     def get_code_freq_api(self, pid):
         return BASE + 'project/{}/code_freq'.format(pid)
 
-    def test_code_frequency_api(self):
+    def test_user_login_api(self):
         # query without auth
         api = self.get_code_freq_api(self.test_pid)
         res = self.client.get(api)
@@ -25,9 +25,3 @@ class TestUserApi(BaseSetting):
         api = self.get_code_freq_api(self.test_pid)
         res = self.client.get(api, headers=self.header)
         self.assert_200(res)
-
-        # query not exist pid code frequency
-        not_exsit_pid = 'tsakna2lknc'
-        api = self.get_code_freq_api(not_exsit_pid)
-        res = self.client.get(api, headers=self.header)
-        self.assert_404(res)
