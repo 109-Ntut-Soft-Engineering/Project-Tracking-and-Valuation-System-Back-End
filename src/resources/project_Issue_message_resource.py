@@ -1,4 +1,4 @@
-from models.project_issue_message_model import ProjectIssueMessageModel
+from models.Project_issue_message_model import ProjectIssueMessageModel
 from flask_restful import Resource
 from entities.project import Project
 from conn_tool import ConnTool
