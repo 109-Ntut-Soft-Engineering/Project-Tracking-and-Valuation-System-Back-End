@@ -9,5 +9,5 @@ class ProjectCommitResource(Resource):
         self._model = ProjectCommitModel(ConnTool())
 
     def get(self, pid):
-        commits = self._model.get_project_commit(pid)
-        return commits, status_code.OK
+        data, code = self._model.get_project_commit(pid)
+        return data, code

@@ -575,7 +575,7 @@ class TestProjectCommitModel():
                 }
             ]
         }
-        assert res == expect
+        assert res == (expect, 200)
 
     def test_get_compare_project_commit_pid1_period_shorter_than_pid2(self):
         res = self.model.get_compare_project_commit(constant.TEST_PID_COMPARE, constant.TEST_PID1)
@@ -618,4 +618,4 @@ class TestProjectCommitModel():
                 }
             ]
         }
-        assert res == expect
+        assert res == (expect, 200)

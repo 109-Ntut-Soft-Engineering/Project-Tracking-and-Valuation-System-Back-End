@@ -4,6 +4,7 @@ from entities.commits import Commits
 from entities.my_date import MyDate
 from datetime import datetime, timedelta
 from models.user_model import UserModel
+from common import status_code
 import sys
 
 
@@ -14,8 +15,11 @@ class ProjectCommitModel():
         self._token = UserModel(conn_tool).get_user_githubToken
 
     def get_compare_project_commit(self, pid1, pid2):
-        commits1 = self.get_project_commit(pid1)
-        commits2 = self.get_project_commit(pid2)
+        commits1, code = self.get_project_commit(pid1)
+        commits2, code = self.get_project_commit(pid2)
+
+        if (commits1 == None) or (commits2 == None):
+            return None, status_code.NOT_FOUND
 
         cmt_times1_list = self.__get_commit_times(commits1)
         cmt_times2_list = self.__get_commit_times(commits2)
@@ -48,7 +52,7 @@ class ProjectCommitModel():
             ]
         }
 
-        return msg
+        return msg, status_code.OK
 
     def __get_commit_times(self, commits):
         print(commits, file=sys.stderr)
@@ -108,8 +112,10 @@ class ProjectCommitModel():
     def get_project_commit(self, pid):
         project = self._db.collection(
             u'projects').document(pid).get().to_dict()
+        if project == None:
+            return None, status_code.NOT_FOUND
         commits = self.__get_commits(project)
-        return {"commits": commits.to_dict()}
+        return {"commits": commits.to_dict()}, status_code.OK
 
     def __get_commits(self, project):
         repositories = project['repositories']['Github']
