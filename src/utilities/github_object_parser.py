@@ -16,7 +16,13 @@ class GithubObjectParser:
     @staticmethod
     def parser_commit(commit: Commit) -> dict:
         info = {}
-        author = GithubObjectParser.parser_named_user(commit.author)
+        if commit.author is None:
+            author = {
+                'name': 'unknown', 
+                'email': 'unknown'
+            }
+        else:
+            author = GithubObjectParser.parser_named_user(commit.author)
         info["author"] = author
         info['commit'] = GithubObjectParser.parser_git_commit(commit.commit)
         info['stats'] = GithubObjectParser.parser_commit_stats(commit.stats)
