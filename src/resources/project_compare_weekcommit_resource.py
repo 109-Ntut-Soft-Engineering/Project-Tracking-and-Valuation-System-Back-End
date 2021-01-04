@@ -1,11 +1,12 @@
 from models.project_weekcommit_model import ProjectWeekCommitModel
 from flask_restful import Resource
+from conn_tool import ConnTool
 from common import status_code
 
 
 class ProjectCompareWeekCommitResource(Resource):
     def __init__(self):
-        self._model = ProjectWeekCommitModel()
+        self._model = ProjectWeekCommitModel(ConnTool())
 
     def get(self, pid1, pid2):
         # try:

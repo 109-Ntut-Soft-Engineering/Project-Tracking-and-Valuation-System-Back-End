@@ -5,14 +5,16 @@ from models.user_model import UserModel
 
 
 class ProjectWeekCommitModel():
-    def __init__(self):
-        _conn_tool = ConnTool()
-        self._db = _conn_tool.db
-        self._uid = _conn_tool.uid
-        self._userModel = UserModel(_conn_tool)
+    def __init__(self, conn_tool):
+        self._db = conn_tool.db
+        self._uid = conn_tool.uid
+        self._userModel = UserModel(conn_tool)
 
     def get_weekcommit(self, pid):
         project = self.__get_project(pid)
+        if project == None :
+            return {}
+
         repositories_id = project['repositories']['Github']
 
         token = self._userModel.get_user_githubToken()
@@ -21,9 +23,7 @@ class ProjectWeekCommitModel():
         repos_commits = []
         for id in repositories_id:
             rp = requester.get_rp_by_id(id)
-            if rp is None:
-                pass
-            else:
+            if rp is not None:
                 repos_commits.append(requester.get_weekcommit(rp))
 
         all_repo_week_commit = self.__create_repo_week_dict()
@@ -41,8 +41,12 @@ class ProjectWeekCommitModel():
 
     def get_compare_week_commit(self, pid1, pid2):
         commit1 = self.get_weekcommit(pid1)
+        if commit1 == {}:
+            return {}
         commit1_info = {'pid' : pid1, 'commit' : commit1['commit_info']}
         commit2 = self.get_weekcommit(pid2)
+        if commit2 == {}:
+            return {}
         commit2_info = {'pid' : pid2, 'commit' : commit2['commit_info']}
 
         max = lambda m, n: m if m >= n else n
@@ -70,8 +74,8 @@ class ProjectWeekCommitModel():
                 commit_info[str(hours).zfill(2)] = 0
             commit_info_list.append(commit_info)
 
-        week_dict['start_time'] = str(datetime.date(2099, 12, 31))
-        week_dict['end_time'] = str(datetime.date(1999, 1, 1))
+        week_dict['start_time'] = str(datetime.date(2099, 12, 31)).replace('-', '/')
+        week_dict['end_time'] = str(datetime.date(1999, 1, 1)).replace('-', '/')
         week_dict['commit_info'] = commit_info_list
         return week_dict
 
@@ -85,5 +89,4 @@ class ProjectWeekCommitModel():
     def __get_project(self, pid):
         project = self._db.collection(
             u'projects').document(pid).get().to_dict()
-
         return project

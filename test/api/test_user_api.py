@@ -6,8 +6,8 @@ import os.path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 
 
-# class TestUserApi(BaseSetting):
-#     def setUp(self) -> None:
+#class TestUserApi(BaseSetting):
+#    def setUp(self) -> None:
 #         self.set_auth()
 #         self.test_pid = 'Qb2783tRIxZeGKZYrVDh'
 
@@ -30,3 +30,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
 #         api = self.get_code_freq_api(not_exsit_pid)
 #         res = self.client.get(api, headers=self.header)
 #         self.assert_404(res)
+#    def test_user_login_api(self):
+#        # query without auth
+#       api = self.get_code_freq_api(self.test_pid)
+#        res = self.client.get(api)
+#        self.assert_401(res)
+#
+#        # query exist pid code frequency (normal situation)
+#        api = self.get_code_freq_api(self.test_pid)
+#        res = self.client.get(api, headers=self.header)
+#        self.assert_200(res)
